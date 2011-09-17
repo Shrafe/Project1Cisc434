@@ -1,4 +1,4 @@
-package project.client;
+package client;
 
 import java.net.*;
 import java.util.*;
@@ -9,8 +9,12 @@ import java.io.*;
 
 public class ClientThread extends Thread {
 	public Socket socket;
-	public ClientThread(Socket s){
+	public long time;
+	public boolean scenario2;
+	public ClientThread(Socket s, boolean scenario2){
 		this.socket = s;
+		this.scenario2 = scenario2;
+		
 	}
 
 	public void run(){
@@ -23,10 +27,14 @@ public class ClientThread extends Thread {
 		
 		for (int i = 0; i < 10; i++){
 			try{
-				oos.writeObject(genPayload());
+				ArrayList<double[]> payload = genPayload(scenario2);
+				System.out.println("Sending...");
+				time = System.currentTimeMillis();//starting timer after creation of payload.
+				oos.writeObject(payload);
 				double[] array = (double[])ois.readObject();
-				System.out.println(array);	
-			} catch (Exception e){}
+				System.out.println("Done : "+(System.currentTimeMillis()-time)+"ms");
+					
+			} catch (Exception e){ e.printStackTrace();}
 		}
 		try{
 			oos.close();
@@ -36,12 +44,19 @@ public class ClientThread extends Thread {
 		
 	}
 
-	public ArrayList<double[]> genPayload(){
+	public ArrayList<double[]> genPayload(boolean scenario2){
+		int size=0;
+		if (scenario2)
+			size = 50;
+		else
+			size = 5;
+	
 		ArrayList<double[]> payload = new ArrayList<double[]>(5);
-		for (int i=0; i<5; i++){
-			payload.add(genArray());
-		}
-		return payload;
+			for (int i=0; i<size; i++){
+				payload.add(genArray());
+			}
+			return payload;
+		
 	}
 	
 	public double[] genArray(){

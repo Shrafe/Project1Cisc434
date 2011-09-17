@@ -1,4 +1,4 @@
-package project.server;
+package server;
 
 import java.net.*;
 import java.util.*;
@@ -6,10 +6,13 @@ import java.io.*;
 
 public class ServerThread extends Thread {
 	private Socket s = null;
+	long time;
 	
 	public ServerThread(Socket s){
 		super("ServerThread");
 		this.s = s;
+		time = System.currentTimeMillis();
+		
 	}
 	
 	public void run(){
@@ -26,7 +29,7 @@ public class ServerThread extends Thread {
 			ois = new ObjectInputStream(s.getInputStream()); // read from the socket
 		}catch (Exception e){}
 		
-		while (count < 10){
+		while (time < time + 60000){
 		try {
 			try{
 				arrays = (ArrayList<double[]>)ois.readObject();

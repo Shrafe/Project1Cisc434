@@ -1,10 +1,9 @@
-package project.server;
+package server;
 
-// asdifajsd;dklj
+// derp
 import java.net.*;
 import java.io.*;
 // just run this thing and connect using the Client class
-
 
 public class Server {
 

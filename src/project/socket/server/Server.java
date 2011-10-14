@@ -1,4 +1,4 @@
-package server;
+package socket.server;
 
 // derp
 import java.net.*;

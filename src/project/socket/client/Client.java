@@ -1,4 +1,4 @@
-package client;
+package socket.client;
 // YO
 import java.io.*;
 import java.net.*;

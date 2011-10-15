@@ -32,7 +32,6 @@ public class SocketClientThread extends Thread {
 				oos.writeObject(payload);
 				array = (double[])ois.readObject();
 				System.out.println("Done : "+(System.currentTimeMillis()-time)+"ms");
-					
 			} catch (Exception e){ e.printStackTrace();}
 		}
 		try{
@@ -50,7 +49,6 @@ public class SocketClientThread extends Thread {
 				payload.add(genArray());
 			}
 			return payload;
-		
 	}
 	
 	public double[] genArray(){

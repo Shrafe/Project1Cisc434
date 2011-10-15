@@ -45,8 +45,6 @@ public class SocketClientThread extends Thread {
 
 	public ArrayList<double[]> genPayload(){
 		int size=5;
-
-	
 		ArrayList<double[]> payload = new ArrayList<double[]>(size);
 			for (int i=0; i<size; i++){
 				payload.add(genArray());

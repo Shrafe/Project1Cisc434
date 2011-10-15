@@ -17,7 +17,7 @@ public class SocketServer {
 			System.err.println("Couldn't listen to the socket 10000. FAIL");
 			System.exit(1);
 		}
-		
+		System.out.println("Socket Server ready");
 		while (true){
 			new SocketServerThread(server.accept()).start(); // create a new thread with the socket recieved if a client connects, and start it	
 		}		

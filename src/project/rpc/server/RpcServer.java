@@ -24,7 +24,7 @@ public class RpcServer {
 			config.setEnabledForExtensions(true);
 			webServer.start();
 		}catch (Exception e){
-			System.out.println("rpc server error");
+			System.out.println("RPC Server Error");
 		}
 	
 	}

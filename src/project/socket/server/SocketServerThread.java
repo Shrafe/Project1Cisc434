@@ -4,11 +4,11 @@ import java.net.*;
 import java.util.*;
 import java.io.*;
 
-public class ServerThread extends Thread {
+public class SocketServerThread extends Thread {
 	private Socket s = null;
 	long time;
 	
-	public ServerThread(Socket s){
+	public SocketServerThread(Socket s){
 		super("SocketServerThread");
 		this.s = s;
 		time = System.currentTimeMillis();

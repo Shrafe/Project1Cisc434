@@ -7,12 +7,12 @@ import java.io.*;
 // thread to do the actual sending of a payload to the server
 // it waits for a response for it's payload, and quits when it's done
 
-public class ClientThread extends Thread {
+public class SocketClientThread extends Thread {
 	public Socket socket;
 	public long time;
 	public double[] array; 
 
-	public ClientThread(Socket s){
+	public SocketClientThread(Socket s){
 		this.socket = s;
 	}
 

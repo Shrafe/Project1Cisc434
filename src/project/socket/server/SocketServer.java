@@ -5,7 +5,7 @@ import java.net.*;
 import java.io.*;
 // just run this thing and connect using the Client class
 
-public class Server {
+public class SocketServer {
 
 	public static void main (String [] args) throws IOException{
 		ServerSocket server = null;
@@ -19,7 +19,7 @@ public class Server {
 		}
 		
 		while (true){
-			new ServerThread(server.accept()).start(); // create a new thread with the socket recieved if a client connects, and start it	
+			new SocketServerThread(server.accept()).start(); // create a new thread with the socket recieved if a client connects, and start it	
 		}		
 	}
 }

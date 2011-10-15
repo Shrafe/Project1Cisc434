@@ -3,10 +3,10 @@ package socket.client;
 import java.io.*;
 import java.net.*;
 
-public class Client {
+public class SocketClient {
 	public static void main (String [] args) throws IOException, ClassNotFoundException{
 		Socket s = null; // the socket for communication and connecting to the server
-		boolean scenario2 = true;
+		boolean scenario2 = false;
 		int socket = 4444;
 			// 	we want to send 10 Payloads in parallel
 			// spawn a new ClientThread to send the payload to the socket and wait for the server's response
@@ -14,11 +14,11 @@ public class Client {
 			//send only one payload
 			if (scenario2){
 				for (int i = 0; i < 10; i++){
-					new ClientThread(new Socket("localhost",4444)).start(); // 10 calls at the same time.
+					new SocketClientThread(new Socket("localhost",4444)).start(); // 10 calls at the same time.
 				}
 			}
 			else
-				new ClientThread(new Socket("localhost",4444)).start(); // 1 thread, calling ten times
+				new SocketClientThread(new Socket("localhost",4444)).start(); // 1 thread, calling ten times
 
 	}
 

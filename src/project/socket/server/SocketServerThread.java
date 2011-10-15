@@ -20,10 +20,9 @@ public class SocketServerThread extends Thread {
 		// assume we can get the arrays as is, because they are indeed serializable
 		// each client is going to give us 5 arrays in a "packet" 
 		ArrayList<double[]> arrays = null; // so we know which array to send back
-		double currentGreatest = 0; // the greatest average seen so far
 		ObjectOutputStream oos = null;
 		ObjectInputStream ois = null;
-		double[] greatestArray = null; // the greatest array we've seen so far
+		double[] greatestArray = null; // the greatest array 
 		try{
 			oos = new ObjectOutputStream(s.getOutputStream()); // output to the socket
 			ois = new ObjectInputStream(s.getInputStream()); // read from the socket
@@ -35,23 +34,11 @@ public class SocketServerThread extends Thread {
 				arrays = (ArrayList<double[]>)ois.readObject();
 			}catch (IOException e){}
 			 catch (ClassNotFoundException e){}
-
-			
-			Iterator<double[]> aIt = arrays.iterator();
-			
-			while (aIt.hasNext()){
-				double[] array = aIt.next();
-				double average = getAverage(array);
-				if (average > currentGreatest){
-					currentGreatest = average;
-					greatestArray = array;
-				}
-			}
+			greatestArray = getAverage(arrays);
 			oos.writeObject(greatestArray);	
 			
 			}catch (IOException e){}
 			count++;
-			currentGreatest = -1;
 			greatestArray = null;
 		}
 		try{
@@ -61,7 +48,20 @@ public class SocketServerThread extends Thread {
 		} catch (Exception e){}
 	}
 	
-	public double getAverage(double[] arr){
+	public double[] getAverage(ArrayList<double[]>payload){
+		double currentGreatest = 0;
+		double[] greatestArray = null;
+		for (double[] array : payload){
+			double average = getAverageArray(array);
+			if (average > currentGreatest){
+				currentGreatest = average;
+				greatestArray = array;
+			}
+		}
+		return greatestArray;
+	}
+	
+	public double getAverageArray(double[] arr){
 		double average = 0;
 		double sum = 0;
 		for (int i=0; i<arr.length; i++){

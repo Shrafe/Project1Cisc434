@@ -10,6 +10,7 @@ import java.io.*;
 public class ClientThread extends Thread {
 	public Socket socket;
 	public long time;
+	public double[] array; 
 
 	public ClientThread(Socket s){
 		this.socket = s;
@@ -29,7 +30,7 @@ public class ClientThread extends Thread {
 				System.out.println("Sending...");
 				time = System.currentTimeMillis();//starting timer after creation of payload.
 				oos.writeObject(payload);
-				double[] array = (double[])ois.readObject();
+				array = (double[])ois.readObject();
 				System.out.println("Done : "+(System.currentTimeMillis()-time)+"ms");
 					
 			} catch (Exception e){ e.printStackTrace();}

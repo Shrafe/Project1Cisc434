@@ -17,7 +17,4 @@ public class RpcClient {
 		else
 			new RpcClientThread().start();
 	}
-
-	
-	
 }

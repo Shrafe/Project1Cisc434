@@ -5,17 +5,16 @@ import java.net.*;
 
 public class SocketClient {
 	public static void main (String [] args) throws IOException, ClassNotFoundException{
-		Socket s = null; // the socket for communication and connecting to the server
-		boolean scenario2 = false;
+		String scenario = args[0];
 		int socket = 4444;
 		
-		if (scenario2){
+		if (scenario.equals("2")){
 			for (int i = 0; i < 10; i++){
-				new SocketClientThread(new Socket("localhost",socket)).start(); // 10 calls at the same time.
+				new SocketClientThread(new Socket("localhost",socket)).start(); // 10 threads each calling 10 times
 			}
 		}
 		else
-			new SocketClientThread(new Socket("localhost",socket)).start(); // 1 thread, calling ten times
+			new SocketClientThread(new Socket("localhost",socket)).start(); // 1 thread calling ten times
 
 	}
 

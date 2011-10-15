@@ -23,6 +23,7 @@ public class RpcServer {
 			XmlRpcServerConfigImpl config = (XmlRpcServerConfigImpl) xmlServer.getConfig();
 			config.setEnabledForExtensions(true);
 			webServer.start();
+			System.out.println("RPC Server ready.");
 		}catch (Exception e){
 			System.out.println("RPC Server Error");
 		}

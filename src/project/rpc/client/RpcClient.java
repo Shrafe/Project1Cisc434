@@ -7,9 +7,9 @@ import org.apache.xmlrpc.client.*;
 
 public class RpcClient {
 	public static void main(String[] args) throws Exception {
-		boolean scenario2 = true;
+		String scenario = args[0];
 		
-		if (scenario2){
+		if (scenario.equals("2")){
 			for (int i = 0; i<10; i++){
 				new RpcClientThread().start();
 			}

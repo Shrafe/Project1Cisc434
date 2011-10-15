@@ -7,12 +7,18 @@ public class Client {
 	public static void main (String [] args) throws IOException, ClassNotFoundException{
 		Socket s = null; // the socket for communication and connecting to the server
 		boolean scenario2 = true;
+		int socket = 4444;
 			// 	we want to send 10 Payloads in parallel
 			// spawn a new ClientThread to send the payload to the socket and wait for the server's response
 			// generate 10 payloads and send them
 			//send only one payload
-			s = new Socket("localhost", 4444);
-			new ClientThread(s, scenario2).start();
+			if (scenario2){
+				for (int i = 0; i < 10; i++){
+					new ClientThread(new Socket("localhost",4444)).start(); // 10 calls at the same time.
+				}
+			}
+			else
+				new ClientThread(new Socket("localhost",4444)).start(); // 1 thread, calling ten times
 
 	}
 

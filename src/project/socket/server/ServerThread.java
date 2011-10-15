@@ -9,7 +9,7 @@ public class ServerThread extends Thread {
 	long time;
 	
 	public ServerThread(Socket s){
-		super("ServerThread");
+		super("SocketServerThread");
 		this.s = s;
 		time = System.currentTimeMillis();
 		
@@ -29,7 +29,7 @@ public class ServerThread extends Thread {
 			ois = new ObjectInputStream(s.getInputStream()); // read from the socket
 		}catch (Exception e){}
 		
-		while (time < time + 60000){
+		while (count < 10){
 		try {
 			try{
 				arrays = (ArrayList<double[]>)ois.readObject();

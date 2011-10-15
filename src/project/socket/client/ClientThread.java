@@ -10,11 +10,9 @@ import java.io.*;
 public class ClientThread extends Thread {
 	public Socket socket;
 	public long time;
-	public boolean scenario2;
-	public ClientThread(Socket s, boolean scenario2){
+
+	public ClientThread(Socket s){
 		this.socket = s;
-		this.scenario2 = scenario2;
-		
 	}
 
 	public void run(){
@@ -27,7 +25,7 @@ public class ClientThread extends Thread {
 		
 		for (int i = 0; i < 10; i++){
 			try{
-				ArrayList<double[]> payload = genPayload(scenario2);
+				ArrayList<double[]> payload = genPayload();
 				System.out.println("Sending...");
 				time = System.currentTimeMillis();//starting timer after creation of payload.
 				oos.writeObject(payload);
@@ -44,14 +42,11 @@ public class ClientThread extends Thread {
 		
 	}
 
-	public ArrayList<double[]> genPayload(boolean scenario2){
-		int size=0;
-		if (scenario2)
-			size = 50;
-		else
-			size = 5;
+	public ArrayList<double[]> genPayload(){
+		int size=5;
+
 	
-		ArrayList<double[]> payload = new ArrayList<double[]>(5);
+		ArrayList<double[]> payload = new ArrayList<double[]>(size);
 			for (int i=0; i<size; i++){
 				payload.add(genArray());
 			}

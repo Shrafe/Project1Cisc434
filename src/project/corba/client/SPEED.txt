@@ -1,0 +1,8 @@
+Corba Speed improvements
+
+Original had about 230ms average time, wanted to improve, did the following
+1) checks for corbaImpl already being defined, since it is static. Improved to about 40ms averages, up from 200+ms
+
+Further improvements: 
+Move connection into the CorbaClient class and have CorbaClientThread use that connection, avoids creating new handles constantly. 
+This should result in even more drastic speed ups

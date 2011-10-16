@@ -1,0 +1,5 @@
+TODO:
+
+For some reason, the threads won't launch correctly in CorbaClient. 
+Debugging got me nowhere, even though the way they are launched is identical to 
+the other Clients. What do??

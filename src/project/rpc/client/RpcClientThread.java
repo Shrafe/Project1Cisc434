@@ -6,11 +6,18 @@ import org.apache.xmlrpc.*;
 import org.apache.xmlrpc.client.*;
 
 public class RpcClientThread extends Thread{
-	int threadNum;
-	double[] array;
-	
-	public RpcClientThread(int tn){
+	private int threadNum;
+	private double[] array;
+	private URL serverUrl = null; // url is in the form http://<hostname>:<port>
+
+	public RpcClientThread(int tn, String url){
 		this.threadNum = tn;
+		try {
+			this.serverUrl = new URL(url);
+		} catch (MalformedURLException e) {
+			System.out.println("Error in RPC Client Thread: [" + tn +"]\n");
+			e.printStackTrace();
+		}
 	}
 		
 	public void run(){
@@ -19,12 +26,14 @@ public class RpcClientThread extends Thread{
 		long startTime = 0;
 		try{
 			array = null;
+			// create a new configuration object that allows us to set the required characteristics of our client
 			XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
-			config.setServerURL(new URL("http://127.0.0.1:4444/xmlrpc"));
+			config.setServerURL(serverUrl); // the server to connect to
 			config.setEnabledForExtensions(true); // allow serializable objects to be used
 			config.setConnectionTimeout(60000); // timeout of 1 min
 			config.setReplyTimeout(60000); // 1 min timeout on replies too
 			
+			// create the new client
 			XmlRpcClient client = new XmlRpcClient();
 			client.setConfig(config);
 			

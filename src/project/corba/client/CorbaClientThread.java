@@ -9,9 +9,10 @@ class CorbaClientThread extends Thread {
 	public long time;
 	static Corba corbaImpl;
 	
-	public void run(String[] args){
+	public void run(){
 		try{
-			ORB orb = ORB.init(args,null);
+			String[] ph = null;
+			ORB orb = ORB.init(ph,null);
 			
 			org.omg.CORBA.Object objectReference = orb.resolve_initial_references("NameService");
 			NamingContextExt namingContextReference = NamingContextExtHelper.narrow(objectReference);

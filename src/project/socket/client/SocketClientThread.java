@@ -9,14 +9,18 @@ import java.io.*;
 
 public class SocketClientThread extends Thread {
 	public Socket socket;
-	public long time;
+	public int threadNum;
 	public double[] array; 
 
-	public SocketClientThread(Socket s){
+	public SocketClientThread(Socket s,int tn){
 		this.socket = s;
+		this.threadNum = tn;
 	}
 
 	public void run(){
+		long totalTime = 0;
+		long timeTaken = 0;
+		long startTime = 0;
 		ObjectOutputStream oos=null;
 		ObjectInputStream ois=null;
 		try{
@@ -24,17 +28,21 @@ public class SocketClientThread extends Thread {
 			ois = new ObjectInputStream(socket.getInputStream());
 		}catch (IOException e){}
 		
-		for (int i = 0; i < 10; i++){
+		for (int i = 1; i < 11; i++){
 			try{
 				ArrayList<double[]> payload = genPayload();
-				System.out.println("Sending...");
-				time = System.currentTimeMillis();//starting timer after creation of payload.
+				System.out.println("Thread:"+threadNum+": Starting run ["+i+"]");
+				startTime = System.currentTimeMillis();//starting timer after creation of payload.
 				oos.writeObject(payload);
 				array = (double[])ois.readObject();
-				System.out.println("Done : "+(System.currentTimeMillis()-time)+"ms");
+				timeTaken = System.currentTimeMillis() - startTime;
+				totalTime+=timeTaken;
+				System.out.println("Thread:"+threadNum+": Received array in: "+timeTaken+"ms");
+				
 			} catch (Exception e){ e.printStackTrace();}
 		}
 		try{
+			System.out.println("Thread:"+threadNum+": Complete in: "+totalTime+"ms | Average call time:"+totalTime/10+"ms");
 			oos.close();
 			ois.close();
 			socket.close();

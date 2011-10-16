@@ -6,10 +6,10 @@ public class RmiClient {
 		
 		if (scenario.equals("2")){
 			for (int i = 0; i<10; i++){
-				new RmiClientThread().start();
+				new RmiClientThread(i).start();
 			}
 		}
 		else 
-			new RmiClientThread().start();
+			new RmiClientThread(1).start();
 	}
 }

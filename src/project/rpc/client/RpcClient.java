@@ -11,10 +11,10 @@ public class RpcClient {
 		
 		if (scenario.equals("2")){
 			for (int i = 0; i<10; i++){
-				new RpcClientThread().start();
+				new RpcClientThread(i).start();
 			}
 		}
 		else
-			new RpcClientThread().start();
+			new RpcClientThread(1).start();
 	}
 }

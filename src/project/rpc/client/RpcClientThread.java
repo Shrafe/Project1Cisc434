@@ -6,10 +6,17 @@ import org.apache.xmlrpc.*;
 import org.apache.xmlrpc.client.*;
 
 public class RpcClientThread extends Thread{
-	public long time;
+	int threadNum;
 	double[] array;
+	
+	public RpcClientThread(int tn){
+		this.threadNum = tn;
+	}
 		
 	public void run(){
+		long totalTime = 0;
+		long timeTaken = 0;
+		long startTime = 0;
 		try{
 			array = null;
 			XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
@@ -21,15 +28,18 @@ public class RpcClientThread extends Thread{
 			XmlRpcClient client = new XmlRpcClient();
 			client.setConfig(config);
 			
-			for (int i = 0; i < 10; i++){
+			for (int i = 1; i < 11; i++){
 				try{ 
 					ArrayList<double[]> payload = genPayload();
-					System.out.println("Sending...");
-					time = System.currentTimeMillis();//starting timer after creation of payload.
+					System.out.println("Thread:"+threadNum+": Starting run ["+i+"]");
+					startTime = System.currentTimeMillis();//starting timer after creation of payload.
 					array = (double[]) client.execute("Worker.getAverage", payload);
-					System.out.println("Done : "+(System.currentTimeMillis()-time)+"ms");
+					timeTaken = System.currentTimeMillis() - startTime;
+					totalTime += timeTaken;
+					System.out.println("Thread:"+threadNum+": Received array in: "+timeTaken+"ms");
 				}catch(Exception e){ e.printStackTrace();}
 			}
+			System.out.println("Thread:"+threadNum+": Complete in: "+totalTime+"ms | Average call time:"+totalTime/10+"ms");
 		}catch (Exception e){e.printStackTrace();}
 	}
 	

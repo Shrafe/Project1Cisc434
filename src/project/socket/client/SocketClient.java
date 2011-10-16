@@ -10,11 +10,11 @@ public class SocketClient {
 		
 		if (scenario.equals("2")){
 			for (int i = 0; i < 10; i++){
-				new SocketClientThread(new Socket("localhost",socket)).start(); // 10 threads each calling 10 times
+				new SocketClientThread(new Socket("localhost",socket),i).start(); // 10 threads each calling 10 times
 			}
 		}
 		else
-			new SocketClientThread(new Socket("localhost",socket)).start(); // 1 thread calling ten times
+			new SocketClientThread(new Socket("localhost",socket),1).start(); // 1 thread calling ten times
 
 	}
 

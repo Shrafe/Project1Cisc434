@@ -7,23 +7,33 @@ import rmi.server.RmiServer;
 
 public class RmiClientThread extends Thread {
 	public double[] array;
-	public long time;
+	public int threadNum;
+
+	public RmiClientThread(int tn){
+		this.threadNum = tn;
+	}
 	
 	public void run(){
 		try {
+			long totalTime = 0;
+			long timeTaken = 0;
+			long startTime = 0;
 			String name = "RmiServer";
 			Registry reg = LocateRegistry.getRegistry("localhost");
 			RmiServer server = (RmiServer) reg.lookup(name);
 			
-			for (int i = 0; i < 10; i++){
+			for (int i = 1; i < 11; i++){
 				try{
 					ArrayList<double[]> payload = genPayload();
-					System.out.println("Sending...");
-					time = System.currentTimeMillis();
+					System.out.println("Thread:"+threadNum+": Starting run ["+i+"]");
+					startTime = System.currentTimeMillis();
 					array = server.getAverage(payload);
-					System.out.println("Done : "+(System.currentTimeMillis()-time)+"ms");
+					timeTaken = System.currentTimeMillis() - startTime;
+					totalTime+=timeTaken;
+					System.out.println("Thread:"+threadNum+": Received array in: "+timeTaken+"ms");
 				} catch (Exception e){ e.printStackTrace();}
 			}
+			System.out.println("Thread:"+threadNum+": Complete in: "+totalTime+"ms | Average call time:"+totalTime/10+"ms");
 		} catch (Exception e){e.printStackTrace();}
 	}
 	

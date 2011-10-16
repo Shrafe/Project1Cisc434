@@ -1,8 +1,4 @@
 package corba.client;
-import corba.server.*;
-
-import org.omg.CosNaming.*;
-import org.omg.CORBA.*;
 
 public class CorbaClient {
 	public static void main(String[] args) {
@@ -10,17 +6,11 @@ public class CorbaClient {
 		
 		if (scenario.equals("2")){
 			for (int i = 0; i<10; i++){
-				try {
-					new CorbaClientThread().start();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				new CorbaClientThread().start();
 			}
 		}
-		else{
+		else
 			new CorbaClientThread().start();
-		}
 	}
 }
 

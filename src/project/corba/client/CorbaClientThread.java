@@ -1,7 +1,6 @@
 package corba.client;
 
 import corba.server.*;
-
 import org.omg.CosNaming.*;
 import org.omg.CORBA.*;
 

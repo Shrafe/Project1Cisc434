@@ -37,7 +37,7 @@ public abstract class CorbaPOA extends org.omg.PortableServer.Servant
          double $result[] = null;
          $result = this.getAverage (payload);
          out = $rh.createReply();
-         corba.server.arrayHelper.write (out, $result);
+         corba.server.ArrayHelper.write (out, $result);
          break;
        }
 

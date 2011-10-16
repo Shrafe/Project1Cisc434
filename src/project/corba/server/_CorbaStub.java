@@ -18,7 +18,7 @@ public class _CorbaStub extends org.omg.CORBA.portable.ObjectImpl implements cor
                 org.omg.CORBA.portable.OutputStream $out = _request ("getAverage", true);
                 corba.server.PayloadHelper.write ($out, payload);
                 $in = _invoke ($out);
-                double $result[] = corba.server.arrayHelper.read ($in);
+                double $result[] = corba.server.ArrayHelper.read ($in);
                 return $result;
             } catch (org.omg.CORBA.portable.ApplicationException $ex) {
                 $in = $ex.getInputStream ();

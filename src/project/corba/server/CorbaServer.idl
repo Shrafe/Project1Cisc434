@@ -1,0 +1,17 @@
+module corbaserver
+{
+  typedef double array[1000];
+  
+  struct Payload {
+  	double arrayOne[1000];
+  	double arrayTwo[1000];
+    double arrayThree[1000];
+  	double arrayFour[1000];
+  	double arrayFive[1000];
+  };
+
+  interface Corba
+  {
+     array getAverage(in Payload payload);    
+  };
+};

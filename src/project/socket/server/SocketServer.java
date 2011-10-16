@@ -1,9 +1,7 @@
 package socket.server;
 
-// derp
-import java.net.*;
-import java.io.*;
-// just run this thing and connect using the Client class
+import java.io.IOException;
+import java.net.ServerSocket;
 
 public class SocketServer {
 

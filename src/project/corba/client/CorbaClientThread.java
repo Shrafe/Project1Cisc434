@@ -6,7 +6,6 @@ import org.omg.CORBA.*;
 
 class CorbaClientThread extends Thread {
 	private double[] array;
-	public static Corba corbaImpl;
 	private int threadNum;
 	
 	public CorbaClientThread(int tn){
@@ -18,26 +17,12 @@ class CorbaClientThread extends Thread {
 		long timeTaken = 0;
 		long startTime = 0;
 		try{
-			String[] ph = null;
-			ORB orb = ORB.init(ph,null);
-			
-			org.omg.CORBA.Object objectReference = orb.resolve_initial_references("NameService");
-			NamingContextExt namingContextReference = NamingContextExtHelper.narrow(objectReference);
-			
-			String name = "getAverage";
-			if (corbaImpl == null){
-				corbaImpl = CorbaHelper.narrow(namingContextReference.resolve_str(name));
-				System.out.println("Thread:"+threadNum+": Obtained a handle on server object: " + corbaImpl);
-			}
-			else
-				System.out.println("Thread:"+threadNum+": Already had a handle on server object: " + corbaImpl);
-			
 			for (int i = 1; i < 11; i++){
 				try{
 					Payload payload = genPayload();
 					System.out.println("Thread:"+threadNum+": Starting run ["+i+"]");
 					startTime = System.currentTimeMillis();
-					array = corbaImpl.getAverage(payload);
+					array = CorbaClient.corbaImpl.getAverage(payload);
 					timeTaken = System.currentTimeMillis() - startTime;
 					totalTime+=timeTaken;
 					System.out.println("Thread:"+threadNum+": Received array in: "+timeTaken+"ms");

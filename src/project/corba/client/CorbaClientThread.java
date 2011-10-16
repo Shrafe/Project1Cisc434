@@ -5,9 +5,9 @@ import org.omg.CosNaming.*;
 import org.omg.CORBA.*;
 
 class CorbaClientThread extends Thread {
-	public double[] array;
-	static Corba corbaImpl;
-	public int threadNum;
+	private double[] array;
+	public static Corba corbaImpl;
+	private int threadNum;
 	
 	public CorbaClientThread(int tn){
 		this.threadNum = tn;
@@ -25,8 +25,12 @@ class CorbaClientThread extends Thread {
 			NamingContextExt namingContextReference = NamingContextExtHelper.narrow(objectReference);
 			
 			String name = "getAverage";
-			corbaImpl = CorbaHelper.narrow(namingContextReference.resolve_str(name));
-			System.out.println("Obtained a handle on server object: " + corbaImpl);
+			if (corbaImpl == null){
+				corbaImpl = CorbaHelper.narrow(namingContextReference.resolve_str(name));
+				System.out.println("Thread:"+threadNum+": Obtained a handle on server object: " + corbaImpl);
+			}
+			else
+				System.out.println("Thread:"+threadNum+": Already had a handle on server object: " + corbaImpl);
 			
 			for (int i = 1; i < 11; i++){
 				try{

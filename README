@@ -3,3 +3,9 @@ This is the Project for CISC 434. Implements Client/Server using four different 
 2) RPC - Remote Procedure Call
 3) RMI - Remote Method Invocation
 4) CORBA - Common Object Request Broker Architecture
+
+Methodology for running the server.
+
+
+
+

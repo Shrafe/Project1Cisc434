@@ -39,7 +39,12 @@ public class CorbaClient {
 			org.omg.CORBA.Object objectReference = orb.resolve_initial_references("NameService");
 			NamingContextExt namingContextReference = NamingContextExtHelper.narrow(objectReference);
 			corbaImpl = CorbaHelper.narrow(namingContextReference.resolve_str("getAverage"));
-		} catch (Exception e) {e.printStackTrace();}
+		} catch (Exception e) {
+			e.printStackTrace();
+			try{
+				Thread.sleep(10000); //allow us to see errors if they occur using batch script
+			}catch(Exception ex){ex.printStackTrace();}
+		}
 		
 		int size;
 		long startTime = 0;
@@ -58,7 +63,12 @@ public class CorbaClient {
 				try{
 					Callable<double[]> sender = new CorbaClientSender(genPayload(),corbaImpl,i,clientNum);
 					senderSet.add(sender);
-				} catch (Exception e){e.printStackTrace();}
+				} catch (Exception e){
+					e.printStackTrace();
+					try{
+						Thread.sleep(10000);
+					}catch(Exception ex){ex.printStackTrace();}
+				}
 			}
 			startTime = System.currentTimeMillis();
 			for (Callable<double[]> sender : senderSet){
@@ -68,9 +78,17 @@ public class CorbaClient {
 			for (Future<double[]> result : resultSet){
 				result.get();
 			}
-			System.out.println("Client:"+clientNum+": Received all results in: "+(System.currentTimeMillis()-startTime)+"ms");
-		} catch (Exception e){e.printStackTrace();}
+		} catch (Exception e){
+			e.printStackTrace();
+			try{
+				Thread.sleep(10000);
+				}catch(Exception ex){ex.printStackTrace();}
+		}
+		System.out.println("Client:"+clientNum+": Received all results in: "+(System.currentTimeMillis()-startTime)+"ms");
 		es.shutdown();
+		try{
+			Thread.sleep(100000);
+		} catch (Exception e){e.printStackTrace();}
 	}
 		
 	public Payload genPayload(){

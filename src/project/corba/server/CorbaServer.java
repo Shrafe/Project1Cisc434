@@ -63,7 +63,12 @@ public class CorbaServer {
 			System.out.println("CorbaServer ready and waiting for requests...");
 			
 			orb.run();
-		} catch (Exception e){e.printStackTrace();}
+		} catch (Exception e){
+			e.printStackTrace();
+			try{
+				Thread.sleep(10000);
+			}catch(Exception ex){ex.printStackTrace();}
+		}
 		
 		System.out.println("CorbaServer Exiting");
 		

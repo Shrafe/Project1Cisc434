@@ -29,8 +29,10 @@ public class RpcServer {
 			webServer.start();
 			System.out.println("RPC Server listening on port: "+port);
 		}catch (Exception e){
-			System.out.println("Error in RPC Server:\n");
 			e.printStackTrace();
+			try{
+				Thread.sleep(10000);
+			}catch(Exception ex){ex.printStackTrace();}
 		}
 	
 	}

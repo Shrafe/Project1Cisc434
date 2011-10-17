@@ -52,7 +52,12 @@ public class RmiClient {
 					Callable<double[]>sender = new RmiClientSender(server, genPayload(), i, clientNum);
 					senderSet.add(sender);
 					
-				} catch (Exception e){ e.printStackTrace();}
+				} catch (Exception e){ 
+					e.printStackTrace();
+					try{
+						Thread.sleep(10000);
+					}catch(Exception ex){ex.printStackTrace();}
+				}
 			}
 			startTime = System.currentTimeMillis();
 			for (Callable<double[]> sender : senderSet){
@@ -62,8 +67,16 @@ public class RmiClient {
 			for (Future<double[]> result : resultSet){
 				result.get();
 			}
-			System.out.println("Client:"+clientNum+": Received all results in: "+(System.currentTimeMillis()-startTime)+"ms");
-		} catch (Exception e){e.printStackTrace();}
+		} catch (Exception e){
+			e.printStackTrace();
+			try{
+				Thread.sleep(10000);
+			}catch(Exception ex){ex.printStackTrace();}
+		}
+		System.out.println("Client:"+clientNum+": Received all results in: "+(System.currentTimeMillis()-startTime)+"ms");
+		try{
+			Thread.sleep(100000);
+		}catch(Exception ex){ex.printStackTrace();}
 	}
 	
 	public ArrayList<double[]> genPayload(){

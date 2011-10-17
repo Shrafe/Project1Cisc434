@@ -41,7 +41,7 @@ class CorbaImpl extends CorbaPOA {
 public class CorbaServer {
 	public static void main(String[]args){
 		try{
-			Runtime.getRuntime().exec("cmd /c start src/project/corba/server/orbd.exe"); // start orbd service
+			Runtime.getRuntime().exec("cmd /c start orbd.exe"); // start orbd service
 			
 			ORB orb = ORB.init(args, null);
 			POA root = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
@@ -63,7 +63,12 @@ public class CorbaServer {
 			System.out.println("CorbaServer ready and waiting for requests...");
 			
 			orb.run();
-		} catch (Exception e){e.printStackTrace();}
+		} catch (Exception e){
+			e.printStackTrace();
+			try{
+				Thread.sleep(10000);
+			}catch(Exception ex){ex.printStackTrace();}
+		}
 		
 		System.out.println("CorbaServer Exiting");
 		

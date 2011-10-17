@@ -29,7 +29,12 @@ public class CorbaClientSender implements Callable<double[]> {
 			corbaImpl.getAverage(payload);
 			timeTaken = System.currentTimeMillis() - startTime;
 			System.out.println("Client:"+clientNum+"|Thread:"+threadNum+": Received result in: "+timeTaken+"ms");
-		}catch (Exception e){e.printStackTrace();}
+		}catch (Exception e){
+			e.printStackTrace();
+			try{
+				Thread.sleep(10000);
+			}catch(Exception ex){ex.printStackTrace();}
+		}
 		return result;
 	}
 }

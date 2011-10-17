@@ -28,7 +28,12 @@ public class RmiServerImpl implements RmiServer {
 			Registry reg = LocateRegistry.createRegistry(registryPort); // create a new registry on port 1099
 			reg.rebind(name,stub); // register the name RmiServer with the registry, which the client uses to call this Class
 			System.out.println("Rmi Server startup complete.\nRegistry listening on port: "+registryPort+"\nServer listening on port: "+port); // ready for calls
-		} catch (Exception e){e.printStackTrace();}
+		} catch (Exception e){
+			e.printStackTrace();
+			try{
+				Thread.sleep(10000);
+			}catch(Exception ex){ex.printStackTrace();}
+		}
 	}
 	
 	public double[] getAverage(ArrayList<double[]>payload){ // implement the RmiServer interface
@@ -37,7 +42,12 @@ public class RmiServerImpl implements RmiServer {
 		Future<double[]> future = es.submit(request);
 		try{
 			result = future.get();
-		}catch (Exception e){e.printStackTrace();}
+		}catch (Exception e){
+			e.printStackTrace();
+			try{
+				Thread.sleep(10000);
+			}catch(Exception ex){ex.printStackTrace();}
+		}
 		return result;
 	}
 	

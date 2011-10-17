@@ -24,6 +24,9 @@ public class RpcClient {
 		} catch (Exception e) {
 			System.out.println("Error in RPC Client: [" + cn +"]\n");
 			e.printStackTrace();
+			try{
+				Thread.sleep(10000);
+				}catch(Exception ex){ex.printStackTrace();}
 			System.exit(1);
 		}
 		this.scenario = scenario;
@@ -68,7 +71,11 @@ public class RpcClient {
 				try{ 
 					Callable<double[]> sender = new RpcClientSender(server,genPayload(),i,clientNum);
 					senderSet.add(sender);
-				}catch(Exception e){ e.printStackTrace();}
+				}catch(Exception e){ 
+					e.printStackTrace();
+					try{
+					Thread.sleep(10000);
+					}catch(Exception ex){ex.printStackTrace();}}
 			}
 			startTime = System.currentTimeMillis();
 			for (Callable<double[]> sender : senderSet){
@@ -79,9 +86,16 @@ public class RpcClient {
 				result.get();
 			}
 			System.out.println("Client:"+clientNum+": Received all results in: "+(System.currentTimeMillis()-startTime)+"ms");
-		}catch (Exception e){e.printStackTrace();}
+		}catch (Exception e){e.printStackTrace();
+			try{
+				Thread.sleep(10000);
+				}catch(Exception ex){ex.printStackTrace();}
+		}
 		//done
 		es.shutdown();
+		try{
+		Thread.sleep(100000); //done. sleep for a long enough time to 
+		}catch(Exception ex){ex.printStackTrace();}
 	}
 	
 	public ArrayList<double[]> genPayload(){
@@ -92,7 +106,6 @@ public class RpcClient {
 				payload.add(genArray());
 			}
 			return payload;
-		
 	}
 	
 	public double[] genArray(){

@@ -1,5 +1,6 @@
 TODO:
 
-For some reason, the threads won't launch correctly in CorbaClient. 
-Debugging got me nowhere, even though the way they are launched is identical to 
-the other Clients. What do??
+There is a problem, here are the details:
+in CorbaClientThread, there's a loop that calls future.get(); this will not work as desire
+because the get will block, meaning if that future object is tied to the one that completes
+last, we may have a very skewed time measurement

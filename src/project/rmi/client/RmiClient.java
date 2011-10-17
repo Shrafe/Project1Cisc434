@@ -40,19 +40,24 @@ public class RmiClient {
 			size = 1;
 		
 		ExecutorService es = Executors.newFixedThreadPool(size); // controls the thread pool. allows us to return values from threads; very useful!
+		Set<Callable<double[]>> senderSet = new HashSet<Callable<double[]>>();
 		Set<Future<double[]>> resultSet = new HashSet<Future<double[]>>(); // the "Future" class, blocks on the completion of the thread
 		
 		try {
 			String name = "RmiServer"; // the name of the interface we're trying to call the implementation for
 			Registry reg = LocateRegistry.getRegistry(hostname); // get the registry that contains the reference to our RmiServerImpl, located at serverHostname
 			RmiServer server = (RmiServer) reg.lookup(name); // retrieve our RmiServer reference from the registry
-			startTime = System.currentTimeMillis(); // need better way to time this
 			for (int i = 0; i < size; i++){
 				try{
 					Callable<double[]>sender = new RmiClientSender(server, genPayload(), i, clientNum);
-					Future<double[]> future = es.submit(sender);
-					resultSet.add(future);
+					senderSet.add(sender);
+					
 				} catch (Exception e){ e.printStackTrace();}
+			}
+			startTime = System.currentTimeMillis();
+			for (Callable<double[]> sender : senderSet){
+				Future<double[]> future = es.submit(sender);
+				resultSet.add(future);
 			}
 			for (Future<double[]> result : resultSet){
 				result.get();

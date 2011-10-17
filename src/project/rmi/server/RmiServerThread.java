@@ -10,7 +10,7 @@ public class RmiServerThread implements Callable<double[]> {
 		this.payload = payload;
 	}
 	
-	public double[] call() throws Exception {
+	public double[] call(){
 		double currentGreatest = 0;
 		double[] greatestArray = null;
 		for (double[] array : payload){

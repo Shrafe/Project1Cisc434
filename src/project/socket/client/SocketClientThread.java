@@ -9,18 +9,28 @@ import java.io.*;
 
 public class SocketClientThread extends Thread {
 	public Socket socket;
-	public int threadNum;
+	public int clientNum;
+	public int scenario;
 	public double[] array; 
 
-	public SocketClientThread(Socket s,int tn){
+	/**
+	 * Basic constructor for a SocketClient thread
+	 * 
+	 * @param s Socket object. Will usually start around port 4444. Host will change.
+	 * @param tn Current thread number
+	 */
+	public SocketClientThread(Socket s, int tn, int scenario){
 		this.socket = s;
-		this.threadNum = tn;
+		this.clientNum = tn;
+		this.scenario = scenario;
 	}
 
+	/**
+	 * Creates and sends a batch of data. Measures return time.
+	 */
 	public void run(){
-		long totalTime = 0;
-		long timeTaken = 0;
-		long startTime = 0;
+		
+		long totalTime = 0, timeTaken = 0, startTime = 0; // Performance metrics
 		ObjectOutputStream oos=null;
 		ObjectInputStream ois=null;
 		try{
@@ -28,21 +38,38 @@ public class SocketClientThread extends Thread {
 			ois = new ObjectInputStream(socket.getInputStream());
 		}catch (IOException e){}
 		
-		for (int i = 1; i < 11; i++){
+		int limit;
+		
+		if (scenario == 1) {
+			limit = 2;
+		}
+		else {
+			limit = 11;
+		}
+		
+		// Start at thread 1 and finish on thread 10
+		for (int i = 1; i < limit; i++){
 			try{
+				// Create the data we wish to send
 				ArrayList<double[]> payload = genPayload();
-				System.out.println("Thread:"+threadNum+": Starting run ["+i+"]");
-				startTime = System.currentTimeMillis();//starting timer after creation of payload.
+				System.out.println("Client:"+clientNum+": Starting thread ["+i+"]");
+				
+				// Start the performance timer
+				startTime = System.currentTimeMillis();
+				
+				// Send the data
 				oos.writeObject(payload);
 				array = (double[])ois.readObject();
+				
+				// Stop the performance timer
 				timeTaken = System.currentTimeMillis() - startTime;
 				totalTime+=timeTaken;
-				System.out.println("Thread:"+threadNum+": Received array in: "+timeTaken+"ms");
+				System.out.println("Client:"+clientNum+": Received array in: "+timeTaken+"ms");
 				
 			} catch (Exception e){ e.printStackTrace();}
 		}
 		try{
-			System.out.println("Thread:"+threadNum+": Complete in: "+totalTime+"ms | Average call time:"+totalTime/10+"ms");
+			System.out.println("Client:"+clientNum+": Complete in: "+totalTime+"ms | Average call time:"+totalTime/10+"ms");
 			oos.close();
 			ois.close();
 			socket.close();
@@ -50,17 +77,32 @@ public class SocketClientThread extends Thread {
 		
 	}
 
+	/**
+	 * Creates the ArrayList of 5 arrays that will be sent to the server.
+	 * 
+	 * @return Returns the 5 arrays in one ArrayList
+	 */
 	public ArrayList<double[]> genPayload(){
-		int size=5;
+		
+		int size=5; // The chosen number of arrays per connection
 		ArrayList<double[]> payload = new ArrayList<double[]>(size);
-			for (int i=0; i<size; i++){
-				payload.add(genArray());
-			}
-			return payload;
+		
+		// Populate the ArrayList
+		for (int i=0; i<size; i++){
+			payload.add(genArray());
+		}
+		return payload;
 	}
 	
+	/**
+	 * Creates the arrays for the ArrayList. Currently set to 1000 numbers per array
+	 * 
+	 * @return Returns an array of 1000 randomly generated doubles.
+	 */
 	public double[] genArray(){
 		double [] arr = new double[1000];
+		
+		// RNG
 		for (int i = 0; i < arr.length; i++){
 			arr[i]=Math.random()*10;
 		}

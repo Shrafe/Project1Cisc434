@@ -6,26 +6,29 @@ import org.apache.xmlrpc.*;
 import org.apache.xmlrpc.client.*;
 
 public class RpcClientThread extends Thread{
-	private int threadNum;
-	private double[] array;
+	private int clientNum;
 	private URL serverUrl = null; // url is in the form http://<hostname>:<port>
+	private int scenario; 
 
-	public RpcClientThread(int tn, String url){
-		this.threadNum = tn;
+	public RpcClientThread(int cn, String url, int scenario){
+		this.clientNum = cn;
 		try {
 			this.serverUrl = new URL(url);
-		} catch (MalformedURLException e) {
-			System.out.println("Error in RPC Client Thread: [" + tn +"]\n");
+		} catch (Exception e) {
+			System.out.println("Error in RPC Client Thread: [" + cn +"]\n");
 			e.printStackTrace();
 		}
+		this.scenario = scenario;
 	}
 		
 	public void run(){
-		long totalTime = 0;
-		long timeTaken = 0;
-		long startTime = 0;
+		int size;
+		if(scenario == 2){
+			size = 10;
+		}else 
+			size = 1;
+				
 		try{
-			array = null;
 			// create a new configuration object that allows us to set the required characteristics of our client
 			XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
 			config.setServerURL(serverUrl); // the server to connect to
@@ -37,18 +40,11 @@ public class RpcClientThread extends Thread{
 			XmlRpcClient client = new XmlRpcClient();
 			client.setConfig(config);
 			
-			for (int i = 1; i < 11; i++){
+			for (int i = 0; i < size; i++){
 				try{ 
-					ArrayList<double[]> payload = genPayload();
-					System.out.println("Thread:"+threadNum+": Starting run ["+i+"]");
-					startTime = System.currentTimeMillis();//starting timer after creation of payload.
-					array = (double[]) client.execute("Worker.getAverage", payload);
-					timeTaken = System.currentTimeMillis() - startTime;
-					totalTime += timeTaken;
-					System.out.println("Thread:"+threadNum+": Received array in: "+timeTaken+"ms");
+					new RpcClientSender(client,genPayload(),i,clientNum).start();
 				}catch(Exception e){ e.printStackTrace();}
 			}
-			System.out.println("Thread:"+threadNum+": Complete in: "+totalTime+"ms | Average call time:"+totalTime/10+"ms");
 		}catch (Exception e){e.printStackTrace();}
 	}
 	

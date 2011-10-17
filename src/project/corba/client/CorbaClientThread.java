@@ -5,30 +5,28 @@ import org.omg.CosNaming.*;
 import org.omg.CORBA.*;
 
 class CorbaClientThread extends Thread {
-	private double[] array;
-	private int threadNum;
+	private int clientNum;
+	private int scenario;
+
 	
-	public CorbaClientThread(int tn){
-		this.threadNum = tn;
+	public CorbaClientThread(int cn, int scenario){
+		this.clientNum = cn;
+		this.scenario = scenario;
 	}
 	
 	public void run(){
-		long totalTime = 0;
-		long timeTaken = 0;
-		long startTime = 0;
+		int size;
+		if (scenario == 2)
+			size = 10;
+		else
+			size = 1;
+
 		try{
-			for (int i = 1; i < 11; i++){
+			for (int i = 0; i < size; i++){
 				try{
-					Payload payload = genPayload();
-					System.out.println("Thread:"+threadNum+": Starting run ["+i+"]");
-					startTime = System.currentTimeMillis();
-					array = CorbaClient.corbaImpl.getAverage(payload);
-					timeTaken = System.currentTimeMillis() - startTime;
-					totalTime+=timeTaken;
-					System.out.println("Thread:"+threadNum+": Received array in: "+timeTaken+"ms");
+					new CorbaClientSender(genPayload(), clientNum, i).start();
 				} catch (Exception e){e.printStackTrace();}
 			}
-			System.out.println("Thread:"+threadNum+": Complete in: "+totalTime+"ms | Average call time:"+totalTime/10+"ms");
 		} catch (Exception e){e.printStackTrace();}
 	}
 	public Payload genPayload(){

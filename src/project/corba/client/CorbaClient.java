@@ -8,10 +8,12 @@ import corba.server.*;
 public class CorbaClient {
 	public static Corba corbaImpl;
 	public static void main(String[] args) {
-		String scenario = args[0];
+		int scenario = Integer.parseInt(args[0]);
 		
 		String[] ph = null;
 		ORB orb = ORB.init(ph,null);
+		
+		CorbaClientThread[] clients = new CorbaClientThread[10];
 		
 		try {
 			org.omg.CORBA.Object objectReference = orb.resolve_initial_references("NameService");
@@ -19,14 +21,14 @@ public class CorbaClient {
 			corbaImpl = CorbaHelper.narrow(namingContextReference.resolve_str("getAverage"));
 		} catch (Exception e) {e.printStackTrace();}
 			
-		
-		
-		if (scenario.equals("2")){
-			for (int i = 0; i<10; i++){
-				new CorbaClientThread(i).start();
-			}
+		for (int i = 0; i<10; i++){
+			clients[i] = new CorbaClientThread(i, scenario);
 		}
-		else
-			new CorbaClientThread(1).start();
+		
+		for (int i = 0; i<10; i++){
+			clients[i].start();
+		}
+		
+		
 	}
 }

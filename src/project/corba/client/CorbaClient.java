@@ -5,30 +5,85 @@ import org.omg.CosNaming.NamingContextExt;
 import org.omg.CosNaming.NamingContextExtHelper;
 import corba.server.*;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 public class CorbaClient {
-	public static Corba corbaImpl;
+	private int clientNum;
+	private int scenario;
+	private Corba corbaImpl = null;
+	private ORB orb;
+	
+	public CorbaClient(int cn, int scenario){
+		this.clientNum = cn;
+		this.scenario = scenario;
+	}	
+
 	public static void main(String[] args) {
 		int scenario = Integer.parseInt(args[0]);
+		int clientNum = Integer.parseInt(args[1]);
+		CorbaClient client = new CorbaClient(clientNum, scenario);
+		client.execute();
+	}
 		
+	public void execute(){
 		String[] ph = null;
-		ORB orb = ORB.init(ph,null);
-		
-		CorbaClientThread[] clients = new CorbaClientThread[10];
-		
+		orb = ORB.init(ph,null);
+		// setup the connection
 		try {
 			org.omg.CORBA.Object objectReference = orb.resolve_initial_references("NameService");
 			NamingContextExt namingContextReference = NamingContextExtHelper.narrow(objectReference);
 			corbaImpl = CorbaHelper.narrow(namingContextReference.resolve_str("getAverage"));
 		} catch (Exception e) {e.printStackTrace();}
-			
-		for (int i = 0; i<10; i++){
-			clients[i] = new CorbaClientThread(i, scenario);
+		
+		int size;
+		long startTime = 0;
+		
+		if (scenario == 2)
+			size = 10;
+		else
+			size = 1;
+		
+		ExecutorService es = Executors.newFixedThreadPool(size); // controls the thread pool. allows us to return values from threads; very useful!
+		Set<Future<double[]>> resultSet = new HashSet<Future<double[]>>(); // the "Future" class, blocks on the completion of the thread
+
+		try{
+			startTime = System.currentTimeMillis();
+			for (int i = 0; i < size; i++){
+				try{
+					Callable<double[]> sender = new CorbaClientSender(genPayload(),corbaImpl,i,clientNum);
+					Future<double[]> future = es.submit(sender);
+					resultSet.add(future);
+				} catch (Exception e){e.printStackTrace();}
+			}
+			for (Future<double[]> result : resultSet){
+				result.get();
+			}
+			System.out.println("Client:"+clientNum+": Received all results in: "+(System.currentTimeMillis()-startTime)+"ms");
+		} catch (Exception e){e.printStackTrace();}
+		es.shutdown();
+	}
+		
+	public Payload genPayload(){
+		Payload payload = new Payload();
+		payload.setOne(genArray());
+		payload.setTwo(genArray());
+		payload.setThree(genArray());
+		payload.setFour(genArray());
+		payload.setFive(genArray());
+		return payload;
+	}
+		
+	public double[] genArray(){
+		double [] arr = new double[1000];
+		for (int i = 0; i < arr.length; i++){
+			arr[i]=Math.random()*10;
 		}
-		
-		for (int i = 0; i<10; i++){
-			clients[i].start();
-		}
-		
-		
+		return arr;
 	}
 }
+

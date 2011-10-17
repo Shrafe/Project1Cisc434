@@ -1,0 +1,6 @@
+TODO:
+
+We may need to thread all of the other servers, using a factory type class to make a new object 
+for each request. I'm not sure how we can test whether or not the server is behaving as it should,
+ie is creating a new object for each request, or is solving them all in a queue. 
+

@@ -49,6 +49,7 @@ public class RpcClient {
 			size = 1;
 		
 		ExecutorService es = Executors.newFixedThreadPool(size); // controls the thread pool. allows us to return values from threads; very useful!
+		Set<Callable<double[]>> senderSet = new HashSet<Callable<double[]>>();
 		Set<Future<double[]>> resultSet = new HashSet<Future<double[]>>(); // the "Future" class, blocks on the completion of the thread
 					
 		try{
@@ -62,13 +63,17 @@ public class RpcClient {
 			// create the new client
 			XmlRpcClient server = new XmlRpcClient();
 			server.setConfig(config);
-			startTime = System.currentTimeMillis();
+
 			for (int i = 0; i < size; i++){
 				try{ 
 					Callable<double[]> sender = new RpcClientSender(server,genPayload(),i,clientNum);
-					Future<double[]> future = es.submit(sender);
-					resultSet.add(future);
+					senderSet.add(sender);
 				}catch(Exception e){ e.printStackTrace();}
+			}
+			startTime = System.currentTimeMillis();
+			for (Callable<double[]> sender : senderSet){
+				Future<double[]> future = es.submit(sender);
+				resultSet.add(future);
 			}
 			for (Future<double[]> result : resultSet){
 				result.get();

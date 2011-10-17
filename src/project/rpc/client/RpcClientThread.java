@@ -23,9 +23,9 @@ public class RpcClientThread extends Thread{
 		
 	public void run(){
 		int size;
-		if(scenario == 2){
+		if(scenario == 2)
 			size = 10;
-		}else 
+		else 
 			size = 1;
 				
 		try{

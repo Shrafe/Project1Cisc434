@@ -18,13 +18,17 @@ public class RmiServerImpl implements RmiServer {
         if (System.getSecurityManager() == null) {
             System.setSecurityManager(new SecurityManager());
         }		
-		try{
+
+        try{
 			int port = Integer.parseInt(args[0]);
 			int registryPort = 1099;
+			
 			if (args.length > 1){
 				registryPort = Integer.parseInt(args[1]);
 			}
-						
+			
+			String hostname = args[2];	
+			System.setProperty("java.rmi.server.hostname", hostname);		
 			String name = "RmiServer";
 			RmiServer server = new RmiServerImpl(); // create our server object
 			RmiServer stub = (RmiServer) UnicastRemoteObject.exportObject(server,port); // makes the server available for remote calls on port 

@@ -6,38 +6,33 @@ import java.util.ArrayList;
 import rmi.server.RmiServer;
 
 public class RmiClientThread extends Thread {
-	private double[] array;
-	private int threadNum;
+	private int clientNum;
 	private String hostname;
+	private int scenario;
 	
 	
-	public RmiClientThread(int tn, String shn){
-		this.threadNum = tn;
+	public RmiClientThread(int cn, String shn, int scenario){
+		this.clientNum = cn;
 		this.hostname = shn;
+		this.scenario = scenario;
 	}
 	
 	public void run(){
+		int size; 
+		if (scenario == 2){
+			size = 10;
+		} else
+			size = 1;
 		try {
-			long totalTime = 0;
-			long timeTaken = 0;
-			long startTime = 0;
 			String name = "RmiServer"; // the name of the interface we're trying to call the implementation for
-			// TODO: Maybe we need to use a different getRegistry method, Bryce, if you can't host the registry on port 1099
 			Registry reg = LocateRegistry.getRegistry(hostname); // get the registry that contains the reference to our RmiServerImpl, located at serverHostname
 			RmiServer server = (RmiServer) reg.lookup(name); // retrieve our RmiServer reference from the registry
 			
-			for (int i = 1; i < 11; i++){
+			for (int i = 0; i < size; i++){
 				try{
-					ArrayList<double[]> payload = genPayload();
-					System.out.println("Thread:"+threadNum+": Starting run ["+i+"]");
-					startTime = System.currentTimeMillis(); // measuring only the time taken to transfer
-					array = server.getAverage(payload);
-					timeTaken = System.currentTimeMillis() - startTime;
-					totalTime+=timeTaken;
-					System.out.println("Thread:"+threadNum+": Received array in: "+timeTaken+"ms");
+					new RmiClientSender(server, genPayload(), i, clientNum).start();
 				} catch (Exception e){ e.printStackTrace();}
 			}
-			System.out.println("Thread:"+threadNum+": Complete in: "+totalTime+"ms | Average call time:"+totalTime/10+"ms");
 		} catch (Exception e){e.printStackTrace();}
 	}
 	

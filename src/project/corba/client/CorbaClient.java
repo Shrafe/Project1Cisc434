@@ -27,6 +27,7 @@ public class CorbaClient {
 		int scenario = Integer.parseInt(args[0]);
 		int clientNum = Integer.parseInt(args[1]);
 		CorbaClient client = new CorbaClient(clientNum, scenario);
+		System.out.println("Running Scenario: "+scenario+" on CorbaServer");
 		client.execute();
 	}
 		

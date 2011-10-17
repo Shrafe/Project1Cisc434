@@ -32,5 +32,4 @@ public class Worker {
 		average = sum / 1000;
 		return average;
 	}
-
 }

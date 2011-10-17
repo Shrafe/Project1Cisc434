@@ -2,17 +2,21 @@ package corba.client;
 
 import java.util.concurrent.Callable;
 
+import corba.server.Corba;
 import corba.server.Payload;
 
 public class CorbaClientSender implements Callable<double[]> {
-	public Payload payload;
-	public int clientNum;
-	public int threadNum;
+	private Payload payload;
+	private int clientNum;
+	private int threadNum;
+	private Corba corbaImpl;
 	
-	public CorbaClientSender(Payload payload, int tn, int cn){
+	
+	public CorbaClientSender(Payload payload, Corba corba, int tn, int cn){
 		this.payload = payload;
 		this.clientNum = cn;
-		this.threadNum = tn;		
+		this.threadNum = tn;	
+		this.corbaImpl = corba;
 	}
 	
 	public double[] call(){
@@ -22,7 +26,7 @@ public class CorbaClientSender implements Callable<double[]> {
 		try{ 
 			System.out.println("Client:"+clientNum+"|Thread:"+threadNum+": Sending payload ...");
 			startTime = System.currentTimeMillis();
-			CorbaClient.corbaImpl.getAverage(payload);
+			corbaImpl.getAverage(payload);
 			timeTaken = System.currentTimeMillis() - startTime;
 			System.out.println("Client:"+clientNum+"|Thread:"+threadNum+": Received result in: "+timeTaken+"ms");
 		}catch (Exception e){e.printStackTrace();}

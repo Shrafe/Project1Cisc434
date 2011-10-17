@@ -48,7 +48,7 @@ public class RpcClientThread extends Thread{
 		}catch (Exception e){e.printStackTrace();}
 	}
 	
-	public static ArrayList<double[]> genPayload(){
+	public ArrayList<double[]> genPayload(){
 		int size=5;
 	
 		ArrayList<double[]> payload = new ArrayList<double[]>(size);
@@ -59,7 +59,7 @@ public class RpcClientThread extends Thread{
 		
 	}
 	
-	public static double[] genArray(){
+	public double[] genArray(){
 		double [] arr = new double[1000];
 		for (int i = 0; i < arr.length; i++){
 			arr[i]=Math.random()*10;

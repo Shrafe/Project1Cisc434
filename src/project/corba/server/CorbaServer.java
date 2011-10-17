@@ -31,7 +31,6 @@ class CorbaImpl extends CorbaPOA {
 		}catch (Exception e){e.printStackTrace();}
 		
 		return result;
-		
 	}
 	
 	public void shutdown(){

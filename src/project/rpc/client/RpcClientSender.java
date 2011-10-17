@@ -9,7 +9,6 @@ public class RpcClientSender extends Thread{
 	public int clientNum;
 	public int threadNum;
 	
-	 
 	public RpcClientSender(XmlRpcClient server, ArrayList<double[]> payload, int tn, int cn){
 		this.server = server;
 		this.payload = payload;

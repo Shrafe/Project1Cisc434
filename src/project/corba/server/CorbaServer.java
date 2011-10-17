@@ -4,44 +4,34 @@ import org.omg.CosNaming.*;
 import org.omg.CosNaming.NamingContextPackage.*;
 import org.omg.CORBA.*;
 import org.omg.PortableServer.*;
-import org.omg.PortableServer.POA;
+
+
 import java.util.Properties;
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 class CorbaImpl extends CorbaPOA {
 	private ORB orb;
+	ExecutorService es = Executors.newFixedThreadPool(100);
 	
 	public void setORB(ORB orb){
 		this.orb = orb;
 	}
 	// implementation
 	public double[] getAverage(Payload p){
-		ArrayList<double[]>payload = new ArrayList<double[]>();
-		double currentGreatest = 0;
-		double[] greatestArray = null;
-		payload.add(p.arrayOne);
-		payload.add(p.arrayTwo);
-		payload.add(p.arrayThree);
-		payload.add(p.arrayFour);
-		payload.add(p.arrayFive);			
-		for (double[] array : payload){
-			double thisGreatest = getAverageArr(array);
-			if (thisGreatest > currentGreatest){
-				currentGreatest = thisGreatest;
-				greatestArray = array;
-			}
-		}
-		return greatestArray;			
-	}
-	//helper
-	private double getAverageArr(double[] arr){ 
-		double average = 0;
-		double sum = 0;
-		for (int i=0; i<arr.length; i++){
-			sum += arr[i];
-		}
-		average = sum / 1000;
-		return average;
+		double[] result = null;
+		Callable<double[]> worker = new CorbaServerThread(p);
+		Future<double[]> future = es.submit(worker);
+		
+		try{
+			result = future.get();
+		}catch (Exception e){e.printStackTrace();}
+		
+		return result;
+		
 	}
 	
 	public void shutdown(){

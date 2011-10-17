@@ -15,7 +15,7 @@ public class RpcClientThread extends Thread{
 		try {
 			this.serverUrl = new URL(url);
 		} catch (Exception e) {
-			System.out.println("Error in RPC Client Thread: [" + cn +"]\n");
+			System.out.println("Error in RPC Client: [" + cn +"]\n");
 			e.printStackTrace();
 		}
 		this.scenario = scenario;

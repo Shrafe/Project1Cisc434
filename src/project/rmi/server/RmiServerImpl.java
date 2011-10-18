@@ -34,7 +34,7 @@ public class RmiServerImpl implements RmiServer {
 			RmiServer stub = (RmiServer) UnicastRemoteObject.exportObject(server,port); // makes the server available for remote calls on port 
 			Registry reg = LocateRegistry.createRegistry(registryPort); // create a new registry on port 1099
 			reg.rebind(name,stub); // register the name RmiServer with the registry, which the client uses to call this Class
-			System.out.println("Rmi Server startup complete.\nRegistry listening on port: "+registryPort+"\nServer listening on port: "+port); // ready for calls
+			System.out.println("Rmi Server startup complete.\nServer listening on host: "+System.getProperty("java.rmi.server.hostname")+"\nRegistry listening on port: "+registryPort+"\nServer listening on port: "+port); // ready for calls
 		} catch (Exception e){
 			e.printStackTrace();
 			try{

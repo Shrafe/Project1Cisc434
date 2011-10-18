@@ -39,6 +39,7 @@ public class CorbaClient {
 			org.omg.CORBA.Object objectReference = orb.resolve_initial_references("NameService");
 			NamingContextExt namingContextReference = NamingContextExtHelper.narrow(objectReference);
 			corbaImpl = CorbaHelper.narrow(namingContextReference.resolve_str("getAverage"));
+			System.out.println("Got handle on:" +corbaImpl);
 		} catch (Exception e) {
 			e.printStackTrace();
 			try{

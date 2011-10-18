@@ -23,6 +23,9 @@ public class RmiClient {
 	}
 	
 	public static void main(String[] args) {
+        if (System.getSecurityManager() == null) {
+            System.setSecurityManager(new SecurityManager());
+        }
 		int scenario = Integer.parseInt(args[0]);
 		String hostname = args[1];
 		int clientNum = Integer.parseInt(args[2]);

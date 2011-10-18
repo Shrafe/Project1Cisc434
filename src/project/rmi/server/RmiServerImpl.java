@@ -15,6 +15,9 @@ public class RmiServerImpl implements RmiServer {
 	}	
 	
 	public static void main(String [] args){
+        if (System.getSecurityManager() == null) {
+            System.setSecurityManager(new SecurityManager());
+        }		
 		try{
 			int port = Integer.parseInt(args[0]);
 			int registryPort = 1099;

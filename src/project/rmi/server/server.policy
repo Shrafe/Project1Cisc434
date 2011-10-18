@@ -1,0 +1,5 @@
+grant{
+	permission java.net.SocketPermission "localhost:1099", "connect, resolve";
+	permission java.net.SocketPermission "localhost:4444-", "connect, resolve";
+	permission java.net.SocketPermission "localhost:4444-", "accept, resolve";
+};

@@ -3,6 +3,7 @@ package rmi.client;
 import java.rmi.registry.*;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -44,7 +45,7 @@ public class RmiClient {
 		
 		ExecutorService es = Executors.newFixedThreadPool(size); // controls the thread pool. allows us to return values from threads; very useful!
 		Set<Callable<double[]>> senderSet = new HashSet<Callable<double[]>>();
-		Set<Future<double[]>> resultSet = new HashSet<Future<double[]>>(); // the "Future" class, blocks on the completion of the thread
+		List<Future<double[]>> resultList = new ArrayList<Future<double[]>>();// the "Future" class, blocks on the completion of the thread
 		
 		try {
 			String name = "RmiServer"; // the name of the interface we're trying to call the implementation for
@@ -54,7 +55,6 @@ public class RmiClient {
 				try{
 					Callable<double[]>sender = new RmiClientSender(server, genPayload(), i, clientNum);
 					senderSet.add(sender);
-					
 				} catch (Exception e){ 
 					e.printStackTrace();
 					try{
@@ -63,20 +63,18 @@ public class RmiClient {
 				}
 			}
 			startTime = System.currentTimeMillis();
-			for (Callable<double[]> sender : senderSet){
-				Future<double[]> future = es.submit(sender);
-				resultSet.add(future);
-			}
-			for (Future<double[]> result : resultSet){
+			resultList = es.invokeAll(senderSet);
+			for (Future<double[]> result : resultList){
 				result.get();
 			}
+			System.out.println("Client:"+clientNum+": Received all results in: "+(System.currentTimeMillis()-startTime)+"ms");
 		} catch (Exception e){
 			e.printStackTrace();
 			try{
 				Thread.sleep(10000);
 			}catch(Exception ex){ex.printStackTrace();}
 		}
-		System.out.println("Client:"+clientNum+": Received all results in: "+(System.currentTimeMillis()-startTime)+"ms");
+		
 		try{
 			Thread.sleep(100000);
 		}catch(Exception ex){ex.printStackTrace();}

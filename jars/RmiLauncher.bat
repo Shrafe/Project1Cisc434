@@ -6,7 +6,7 @@ ECHO Scenario is: %scenario%
 ECHO Hostname is: %hostname%
 
 FOR /L %%G in (0,1,9) DO (
-	start java -jar RmiClient.jar %scenario% %hostname% %%G
+	start java -Djava.security.policy=server.policy -jar RmiClient.jar %scenario% %hostname% %%G
 	)  
 pause
 

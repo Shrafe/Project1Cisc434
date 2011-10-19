@@ -23,7 +23,7 @@ public class SocketServer {
 		while (true){
 			// create a new thread with the socket received if a client connects, and start it
 
-			new NewSocketServerThread(socket.accept()).start();
+			new SocketServerThread(socket.accept()).start();
 		}
 	}
 }

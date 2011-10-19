@@ -82,7 +82,7 @@ public class SocketClient {
 			// we know we will only get 10 results back.
 			for (int i = 0; i<limit; i++){
 				double[] result = (double[])ois.readObject();
-				System.out.println("Received response: " + result);				
+				System.out.println("Received response");				
 			}
 			timeTaken = System.currentTimeMillis() - startTime;
 		} catch (Exception e){

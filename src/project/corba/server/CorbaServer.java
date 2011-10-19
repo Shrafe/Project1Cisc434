@@ -41,9 +41,15 @@ class CorbaImpl extends CorbaPOA {
 public class CorbaServer {
 	public static void main(String[]args){
 		try{
-			Runtime.getRuntime().exec("cmd /c start orbd.exe"); // start orbd service
+			Runtime.getRuntime().exec("orbd -ORBInitialPort 1050"); // start orbd service
 			
-			ORB orb = ORB.init(args, null);
+			String port = args[0];
+			System.setProperty("org.omg.CORBA.ORBInitialPort", port);
+			String[] help = new String[1];
+			help[0] = null;
+			
+			ORB orb = ORB.init(help, null);
+			
 			POA root = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
 			root.the_POAManager().activate();
 			
@@ -51,6 +57,7 @@ public class CorbaServer {
 			corbaImpl.setORB(orb);
 			
 			org.omg.CORBA.Object ref = root.servant_to_reference(corbaImpl);
+		
 			Corba corbaRef = CorbaHelper.narrow(ref);
 			
 			org.omg.CORBA.Object objectReference = orb.resolve_initial_references("NameService");

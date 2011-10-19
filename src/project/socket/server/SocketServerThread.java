@@ -6,14 +6,13 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
-public class SocketServerThread extends Thread {
+public class SocketServerThread implements Runnable{
 	private Socket s = null;
-	long time;
-	
-	public SocketServerThread(Socket s){
-		super("SocketServerThread");
+	private int threadNum;
+		
+	public SocketServerThread(Socket s, int threadNum){
 		this.s = s;
-		time = System.currentTimeMillis();
+		this.threadNum = threadNum;
 	}
 	
 	public void run(){
@@ -31,6 +30,7 @@ public class SocketServerThread extends Thread {
 		
 		try {
 			while ((arrays = (ArrayList<double[]>) ois.readObject()) != null){
+				System.out.println("Server Thread:"+threadNum+": Received payload.");
 			try {
 				try{
 					

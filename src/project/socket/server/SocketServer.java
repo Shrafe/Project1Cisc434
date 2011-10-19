@@ -20,10 +20,10 @@ public class SocketServer {
 		}
 
 		System.out.println("Socket Server listening on: " + initialPort);
+		int threadNum = 0;
 		while (true){
-			// create a new thread with the socket received if a client connects, and start it
-
-			new SocketServerThread(socket.accept()).start();
+			new SocketServerThread(socket.accept(), threadNum).run();
+			threadNum++;
 		}
 	}
 }

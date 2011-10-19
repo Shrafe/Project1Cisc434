@@ -4,6 +4,7 @@ import java.util.*;
 
 public class Worker {
 	public double[] getAverage(double[] a, double[] b, double[] c, double[] d, double[] e){
+		System.out.println("Worker getAverage ");
 		ArrayList<double[]>payload = new ArrayList<double[]>(5);
 		payload.add(a);
 		payload.add(b);

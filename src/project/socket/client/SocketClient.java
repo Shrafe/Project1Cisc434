@@ -107,9 +107,6 @@ public class SocketClient {
 		}
 		try{
 			System.out.println("Client:"+clientNum+": Complete in "+ timeTaken +"ms");
-			try{
-				Thread.sleep(100000);
-			}catch(Exception ex){ex.printStackTrace();}
 			oos.close();
 			ois.close();
 			socket.close();

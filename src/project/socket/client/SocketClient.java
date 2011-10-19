@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -47,14 +48,22 @@ public class SocketClient {
 		}
 		
 		ExecutorService es = Executors.newFixedThreadPool(limit);
-		Set<Callable<double[]>> senderSet = new HashSet<Callable<double[]>>();
-		Set<Future<double[]>> resultSet = new HashSet<Future<double[]>>();
+		Set<Runnable> senderSet = new HashSet<Runnable>();
+		ObjectOutputStream oos = null;
+		ObjectInputStream ois = null; 
+		SynchedStreams ss = null;
+		try{ 
+			oos = new ObjectOutputStream(socket.getOutputStream());
+			ois = new ObjectInputStream(socket.getInputStream());
+			ss = new SynchedStreams(oos);
+		}catch (Exception e){e.printStackTrace();}
 		
 		try{
 		// Start at thread 1 and finish on thread 10
+		
 			for (int i = 0; i < limit; i++){
 				try{
-					Callable<double[]> sender = new SocketClientSender(socket, genPayload(), i, clientNum);
+					Runnable sender = new SocketClientSender(ss, genPayload(), i, clientNum);
 					// Create the data we wish to send
 					senderSet.add(sender);
 				}catch (Exception e){
@@ -62,18 +71,20 @@ public class SocketClient {
 					try{
 						Thread.sleep(10000);
 					}catch(Exception ex){ex.printStackTrace();}}
-				}
-					// Start the performance timer
-				startTime = System.currentTimeMillis();
-					
-					// Send the data
-				for (Callable<double[]>sender : senderSet){
-					Future<double[]> future = es.submit(sender);
-					resultSet.add(future);
-				}
-				for (Future<double[]> result: resultSet){
-					result.get();
-				}
+			}
+			// Start the performance timer
+			startTime = System.currentTimeMillis();
+			// Send the data
+			for (Runnable sender : senderSet){
+				es.submit(sender);
+			}
+			
+			// we know we will only get 10 results back.
+			for (int i = 0; i<limit; i++){
+				double[] result = (double[])ois.readObject();
+				System.out.println("Received response: " + result);				
+			}
+			timeTaken = System.currentTimeMillis() - startTime;
 		} catch (Exception e){
 			e.printStackTrace();
 			try{
@@ -81,10 +92,12 @@ public class SocketClient {
 			}catch(Exception ex){ex.printStackTrace();}
 		}
 		try{
-			System.out.println("Client:"+clientNum+": Complete in: "+totalTime+"ms | Average call time:"+totalTime/10+"ms");
+			System.out.println("Client:"+clientNum+": Complete in "+ timeTaken +"ms");
 			try{
 				Thread.sleep(100000);
 			}catch(Exception ex){ex.printStackTrace();}
+			oos.close();
+			ois.close();
 			socket.close();
 		}catch (Exception e){}
 		

@@ -31,6 +31,7 @@ public class NewSocketClient {
 			
 			// Let the server know how many threads are incoming
 			oos.writeInt(limit);
+			
 		}catch (IOException e){
 			e.printStackTrace();
 			System.exit(-1);

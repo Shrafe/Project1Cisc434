@@ -2,6 +2,8 @@ package socket.client;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class NewSocketClientThread implements Runnable {
 	
@@ -10,8 +12,6 @@ public class NewSocketClientThread implements Runnable {
 	private ObjectInputStream ois;
 	private double[] array;
 	private String threadName;
-	private int clientNum;
-	private boolean locked = true;
 	
 	public NewSocketClientThread(ArrayList<double[]> payload,
 			ObjectOutputStream oos,	ObjectInputStream ois,
@@ -25,7 +25,6 @@ public class NewSocketClientThread implements Runnable {
 	
 	public void run() {
 		
-		System.out.println("Running thread: " + threadName);
 		passData();
 	}
 	
@@ -33,42 +32,26 @@ public class NewSocketClientThread implements Runnable {
 		
 		String tName = Thread.currentThread().getName();
 		
-		//if (threadName == null) {
-		//	threadName = tName;
-		//	return;
-		//}
-		
-		while (locked) {
-			
-			if (tName.compareTo(threadName) == 0) {
-				try {
-					
-					// Write the payload
-					oos.writeObject(payload);
-					
-					// Read the returned array
-					array = (double[])ois.readObject();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				locked = false;
-				notifyAll();
-				threadName = null;
-			}
-			else {
-				try {
-					long t1 = System.currentTimeMillis();
-					wait(20);
-					if ((System.currentTimeMillis() - t1) > 20) {
-						System.out.println("****** TIMEOUT! "+tName+
-						" is waiting for thread: "+threadName);
-						}
-					tName = Thread.currentThread().getName();
-					} catch (InterruptedException e) { }
-			}
+		if (!tName.contains("thread0")) {
+			try {
+				wait();
+			} catch (InterruptedException e) {}
+			//tName = Thread.currentThread().getName();
 		}
 		
+		try {
+			// Write the payload
+			oos.writeObject(payload);
+			
+			System.out.println("Running thread: " + threadName);
+			
+			// Read the returned array
+			array = (double[])ois.readObject();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
-		
+		// Wake up ALL the threads!
+		notifyAll();
 	}
 }

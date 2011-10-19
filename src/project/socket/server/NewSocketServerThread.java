@@ -1,5 +1,6 @@
 package socket.server;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -20,7 +21,7 @@ public class NewSocketServerThread extends Thread{
 		time = System.currentTimeMillis();	
 	}
 	
-	public synchronized void run() {
+	public void run() {
 		
 		ArrayList<double[]> arrays = null; // so we know which array to send back
 		double[] greatestArray = null; // the greatest array
@@ -33,7 +34,6 @@ public class NewSocketServerThread extends Thread{
 			
 			limit = ois.readInt();
 			
-			//limit = ois.readInt();
 		}catch (Exception e){
 			e.printStackTrace();
 		}
@@ -42,17 +42,29 @@ public class NewSocketServerThread extends Thread{
 			try {
 				
 				arrays = (ArrayList<double[]>)ois.readObject();
+				System.out.println("Received an Array");
 				
 				greatestArray = getAverage(arrays);
 				oos.writeObject(greatestArray);
+				System.out.println("Sent an Array");
 				
 				count++;
 				greatestArray = null;
 			}catch (Exception e) {
 				e.printStackTrace();
+				System.exit(-1);
 			}
 		}
 		
+		
+		try {
+			oos.close();
+			ois.close();
+			socket.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 	

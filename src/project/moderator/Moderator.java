@@ -12,7 +12,7 @@ public class Moderator {
 		
 		// The variables that will be used as defaults
 		String tech, address;
-		String scenario = "1";
+		String scenario = "2";
 		String ip = "127.0.0.1";
 		String port = "4444";
 		
@@ -41,19 +41,24 @@ public class Moderator {
 		// Choose which client to start
 		switch(Integer.parseInt(tech)) {
 		case 1:	// Socket Case
+			NewSocketClient[] clients = new NewSocketClient[10];
+			
 			for (int i=0; i<10; i++) {
-				params[3] = Integer.toString(i); 
+				//params[3] = Integer.toString(i + 1); 
 				try {
-					SocketClient.main(params);
+					//SocketClient.main(params);
+					clients[i] = new NewSocketClient(Integer.parseInt(scenario),
+							Integer.parseInt(port), ip, i+1);
 				}
 				catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
+			
 			break;
 		case 2: // RMI Case
 			for (int i=0; i<10; i++) {
-				params[3] = Integer.toString(i); 
+				params[3] = Integer.toString(i + 1); 
 				try {
 					RmiClient.main(params);
 				}
@@ -64,7 +69,7 @@ public class Moderator {
 			break;
 		case 3:  // RPC Case
 			for (int i=0; i<10; i++) {
-				params[3] = Integer.toString(i); 
+				params[3] = Integer.toString(i + 1); 
 				try {
 					RpcClient.main(params);
 				}
@@ -75,7 +80,7 @@ public class Moderator {
 			break;
 		case 4: // CORBA Case
 			for (int i=0; i<10; i++) {
-				params[3] = Integer.toString(i); 
+				params[3] = Integer.toString(i + 1); 
 				try {
 					CorbaClient.main(params);
 				}

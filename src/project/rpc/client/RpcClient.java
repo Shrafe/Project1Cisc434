@@ -12,6 +12,12 @@ import java.util.concurrent.Future;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 
+/**
+ * Class defining the behavior of the Client for RPC technology.
+ * @author TomW7
+ *
+ */
+
 public class RpcClient {
 	private int clientNum;
 	private URL serverUrl = null; // url is in the form http://<hostname>:<port>
@@ -32,6 +38,17 @@ public class RpcClient {
 		this.scenario = scenario;
 	}
 
+	/**
+	 * Entry point into the Client. Gathers parameters and creates a new RpcClient
+	 * according to the parameters
+	 * @param args
+	 * @param args[0] : scenario number
+	 * @param args[1] : hostname
+	 * @param args[2] : port number
+	 * @param args[3] : client identification number
+	 * 
+	 */
+	
 	public static void main(String[] args) {
 		int scenario = Integer.parseInt(args[0]);
 		String hostname = args[1];

@@ -11,6 +11,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+/**
+ * Class defining the client operations on the socket. Creates a thread for each payload sent, 
+ * with options for sending either 1 payload, or 10 payloads concurrently
+ * @author TomW7
+ *
+ */
 
 public class SocketClient {
 	public Socket socket;
@@ -19,12 +25,21 @@ public class SocketClient {
 	public double[] array; 
 	
 	public SocketClient(Socket s, int cn, int scenario){
-		this.socket = s;
-		this.clientNum = cn;
-		this.scenario = scenario;
+		this.socket = s; // this client's socket connection
+		this.clientNum = cn; // client identification number
+		this.scenario = scenario; // either 1 or 2
 	}
-	
-	
+	/**
+	 * Entry point into the client. Starts the client with specified settings
+	 * 
+	 * @param args : array with the following elements 
+	 * @param args[0] : scenario number
+	 * @param args[1] : port number
+	 * @param args[2] : hostname
+	 * @param args[3] : clientNumber
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
 	public static void main (String [] args) throws IOException, ClassNotFoundException{
 		int scenario = Integer.parseInt(args[0]);
 		int port = Integer.parseInt(args[1]);
@@ -36,6 +51,9 @@ public class SocketClient {
 		client.execute();
 	}
 	
+	/**
+	 * Executes the client. 
+	 */
 	public void execute(){
 		long totalTime = 0, timeTaken = 0, startTime = 0; // Performance metrics
 		int limit;
@@ -44,28 +62,25 @@ public class SocketClient {
 			limit = 1;
 		}
 		else {
-			limit = 10;
+			limit = 10; // scenario 2, we send 10 concurrent requests
 		}
 		
-		ExecutorService es = Executors.newFixedThreadPool(limit);
-		Set<Runnable> senderSet = new HashSet<Runnable>();
-		ObjectOutputStream oos = null;
+		ExecutorService es = Executors.newFixedThreadPool(limit); // create our thread executor.
+		Set<Runnable> senderSet = new HashSet<Runnable>(); // the set of requests we want to run
+		ObjectOutputStream oos = null; // streams
 		ObjectInputStream ois = null; 
-		SynchedStreams ss = null;
+		SynchedStreams ss = null; // Synchronized stream for writing. 
 		try{ 
-			oos = new ObjectOutputStream(socket.getOutputStream());
+			oos = new ObjectOutputStream(socket.getOutputStream()); // create streams
 			ois = new ObjectInputStream(socket.getInputStream());
-			ss = new SynchedStreams(oos);
+			ss = new SynchedStreams(oos); // synchronize on the outputstream
 		}catch (Exception e){e.printStackTrace();}
 		
-		try{
-		// Start at thread 1 and finish on thread 10
-		
+		try{		
 			for (int i = 0; i < limit; i++){
 				try{
-					Runnable sender = new SocketClientSender(ss, genPayload(), i, clientNum);
-					// Create the data we wish to send
-					senderSet.add(sender);
+					Runnable sender = new SocketClientSender(ss, genPayload(), i, clientNum); // create as many senders as we need
+					senderSet.add(sender); //add them to the set of Senders
 				}catch (Exception e){
 					e.printStackTrace();
 					try{
@@ -76,15 +91,14 @@ public class SocketClient {
 			startTime = System.currentTimeMillis();
 			// Send the data
 			for (Runnable sender : senderSet){
-				es.submit(sender);
+				es.submit(sender); //execute all of the senders
 			}
-			
 			// we know we will only get 10 results back.
 			for (int i = 0; i<limit; i++){
-				double[] result = (double[])ois.readObject();
+				ois.readObject(); // get a response from the server 
 				System.out.println("Received response");				
 			}
-			timeTaken = System.currentTimeMillis() - startTime;
+			timeTaken = System.currentTimeMillis() - startTime; // this is the time taken.
 		} catch (Exception e){
 			e.printStackTrace();
 			try{
@@ -134,7 +148,4 @@ public class SocketClient {
 		}
 		return arr;
 	}
-	
-	
-	
 }

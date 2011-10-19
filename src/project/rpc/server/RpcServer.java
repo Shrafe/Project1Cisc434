@@ -5,6 +5,11 @@ import org.apache.xmlrpc.webserver.*;
 
 public class RpcServer {
 	
+	/**
+	 * Entry point for the server. Registers the Worker class with the XmlRpcServer, and creates 
+	 * a new WebServer on the port specified in args[0]
+	 * @param args - contains in args[0] the port on which the server should be hosted
+	 */
 	public static void main(String []args){
 		try{
 			int port = Integer.parseInt(args[0]);

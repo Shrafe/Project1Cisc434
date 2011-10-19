@@ -15,12 +15,16 @@ public class SocketServerThread implements Runnable{
 		this.threadNum = threadNum;
 	}
 	
+	/**
+	 * This thread is dispatched for each request on the server. Waits on input to the OIS, 
+	 * when received, finds the average array of the received ArrayList, and writes it to the 
+	 * OutputStream of the associated client's socket.
+	 */
+	
 	public void run(){
 		int count = 0;
-		// assume we can get the arrays as is, because they are indeed serializable
-		// each client is going to give us 5 arrays in a "packet" 
-		ArrayList<double[]> arrays = null; // so we know which array to send back
-		ObjectOutputStream oos = null;
+		ArrayList<double[]> payload = null; // the payload received from the client
+		ObjectOutputStream oos = null; // the streams
 		ObjectInputStream ois = null;
 		double[] greatestArray = null; // the greatest array 
 		try{
@@ -29,21 +33,12 @@ public class SocketServerThread implements Runnable{
 		}catch (Exception e){}
 		
 		try {
-			while ((arrays = (ArrayList<double[]>) ois.readObject()) != null){
+			while ((payload = (ArrayList<double[]>) ois.readObject()) != null){ // wait for the client to write something to the stream
 				System.out.println("Server Thread:"+threadNum+": Received payload.");
 			try {
-				try{
-					
-				}catch (Exception e){ 
-					e.printStackTrace();
-					try{
-						Thread.sleep(10000);
-					}catch(Exception ex){ex.printStackTrace();}	
-				}
-
-				greatestArray = getAverage(arrays);
-				oos.writeObject(greatestArray);
-				oos.flush();
+				greatestArray = getAverage(payload); // get the array with the greatest average
+				oos.writeObject(greatestArray); // write that array to the Client's inputStream
+				oos.flush(); // flush the stream 
 				
 				}catch (Exception e){
 					e.printStackTrace();
@@ -54,13 +49,13 @@ public class SocketServerThread implements Runnable{
 				count++;
 				greatestArray = null;
 			}
-		} catch (IOException e1) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+			e.printStackTrace();
+			try{
+				Thread.sleep(10000);
+			}catch(Exception ex){ex.printStackTrace();}
+		} 
 		try{
 			oos.close();
 			ois.close();

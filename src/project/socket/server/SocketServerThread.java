@@ -5,7 +5,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
-import socket.client.SocketClientHelper;
 
 public class SocketServerThread extends Thread {
 	private Socket s = null;
@@ -15,7 +14,6 @@ public class SocketServerThread extends Thread {
 		super("SocketServerThread");
 		this.s = s;
 		time = System.currentTimeMillis();
-		
 	}
 	
 	public void run(){
@@ -31,28 +29,37 @@ public class SocketServerThread extends Thread {
 			ois = new ObjectInputStream(s.getInputStream()); // read from the socket
 		}catch (Exception e){}
 		
-		while (count < 10){
 		try {
-			try{
-				arrays = (ArrayList<double[]>)SocketClientHelper.receiveHelper(ois);
-			}catch (Exception e){ 
-				e.printStackTrace();
+			while ((arrays = (ArrayList<double[]>) ois.readObject()) != null){
+			try {
 				try{
-					Thread.sleep(10000);
-				}catch(Exception ex){ex.printStackTrace();}	
-			}
+					
+				}catch (Exception e){ 
+					e.printStackTrace();
+					try{
+						Thread.sleep(10000);
+					}catch(Exception ex){ex.printStackTrace();}	
+				}
 
-			greatestArray = getAverage(arrays);
-			SocketClientHelper.sendHelper(oos, greatestArray);	
-			
-			}catch (Exception e){
-				e.printStackTrace();
-				try{
-					Thread.sleep(10000);
-				}catch(Exception ex){ex.printStackTrace();}
+				greatestArray = getAverage(arrays);
+				oos.writeObject(greatestArray);
+				oos.flush();
+				
+				}catch (Exception e){
+					e.printStackTrace();
+					try{
+						Thread.sleep(10000);
+					}catch(Exception ex){ex.printStackTrace();}
+				}
+				count++;
+				greatestArray = null;
 			}
-			count++;
-			greatestArray = null;
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 		try{
 			oos.close();

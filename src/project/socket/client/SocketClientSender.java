@@ -42,7 +42,7 @@ public class SocketClientSender implements Callable<double[]> {
 		try{
 			System.out.println("Client:"+clientNum+"|Thread:"+threadNum+": Sending payload ...");
 			startTime = System.currentTimeMillis();//starting timer after creation of payload.
-			SocketClientHelper.sendHelper(oos, payload);
+			oos.writeObject(payload);
 			result = (double[]) SocketClientHelper.receiveHelper(ois);
 			timeTaken = System.currentTimeMillis() - startTime;
 			totalTime += timeTaken;
@@ -62,17 +62,17 @@ public class SocketClientSender implements Callable<double[]> {
 	 * @return Returns the 5 arrays in one ArrayList
 	 */
 	public ArrayList<double[]> genPayload(){
-
+		
 		int size=5; // The chosen number of arrays per connection
 		ArrayList<double[]> payload = new ArrayList<double[]>(size);
-
+		
 		// Populate the ArrayList
 		for (int i=0; i<size; i++){
 			payload.add(genArray());
 		}
 		return payload;
 	}
-
+	
 	/**
 	 * Creates the arrays for the ArrayList. Currently set to 1000 numbers per array
 	 * 
@@ -80,12 +80,12 @@ public class SocketClientSender implements Callable<double[]> {
 	 */
 	public double[] genArray(){
 		double [] arr = new double[1000];
-
+		
 		// RNG
 		for (int i = 0; i < arr.length; i++){
 			arr[i]=Math.random()*10;
 		}
 		return arr;
 	}
-
+	
 }

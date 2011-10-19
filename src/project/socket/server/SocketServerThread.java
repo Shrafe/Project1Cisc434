@@ -30,10 +30,16 @@ public class SocketServerThread implements Runnable{
 		try{
 			oos = new ObjectOutputStream(s.getOutputStream()); // output to the socket
 			ois = new ObjectInputStream(s.getInputStream()); // read from the socket
+			
+			count = ois.readInt();
 		}catch (Exception e){}
 		
 		try {
-			while ((payload = (ArrayList<double[]>) ois.readObject()) != null){ // wait for the client to write something to the stream
+			for (int i = 0; i<count; i++){
+				
+				// wait for the client to write something to the stream
+				payload = (ArrayList<double[]>) ois.readObject();
+			
 				System.out.println("Server Thread:"+threadNum+": Received payload.");
 			try {
 				greatestArray = getAverage(payload); // get the array with the greatest average
@@ -43,17 +49,17 @@ public class SocketServerThread implements Runnable{
 				}catch (Exception e){
 					e.printStackTrace();
 					try{
-						Thread.sleep(10000);
+						//Thread.sleep(10000);
 					}catch(Exception ex){ex.printStackTrace();}
 				}
-				count++;
+				
 				greatestArray = null;
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			try{
-				Thread.sleep(10000);
+				//Thread.sleep(10000);
 			}catch(Exception ex){ex.printStackTrace();}
 		} 
 		try{

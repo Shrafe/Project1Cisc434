@@ -26,6 +26,10 @@ public class CorbaClient {
 	public static void main(String[] args) {
 		int scenario = Integer.parseInt(args[0]);
 		int clientNum = Integer.parseInt(args[1]);
+		String port = args[2];
+		String hostname = args[3];
+		System.setProperty("org.omg.CORBA.ORBInitialPort", port);
+		System.setProperty("org.omg.CORBA.ORBInitialHost", hostname);
 		CorbaClient client = new CorbaClient(clientNum, scenario);
 		System.out.println("Running Scenario: "+scenario+" on CorbaServer");
 		client.execute();

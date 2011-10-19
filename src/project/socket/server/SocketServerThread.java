@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import socket.client.SocketClientHelper;
 
 public class SocketServerThread extends Thread {
 	private Socket s = null;
@@ -33,13 +34,23 @@ public class SocketServerThread extends Thread {
 		while (count < 10){
 		try {
 			try{
-				arrays = (ArrayList<double[]>)ois.readObject();
-			}catch (IOException e){}
-			 catch (ClassNotFoundException e){}
+				arrays = (ArrayList<double[]>)SocketClientHelper.receiveHelper(ois);
+			}catch (Exception e){ 
+				e.printStackTrace();
+				try{
+					Thread.sleep(10000);
+				}catch(Exception ex){ex.printStackTrace();}	
+			}
+
 			greatestArray = getAverage(arrays);
-			oos.writeObject(greatestArray);	
+			SocketClientHelper.sendHelper(oos, greatestArray);	
 			
-			}catch (IOException e){}
+			}catch (Exception e){
+				e.printStackTrace();
+				try{
+					Thread.sleep(10000);
+				}catch(Exception ex){ex.printStackTrace();}
+			}
 			count++;
 			greatestArray = null;
 		}

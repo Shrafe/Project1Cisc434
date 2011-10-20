@@ -74,6 +74,8 @@ public class SocketClient {
 			oos = new ObjectOutputStream(socket.getOutputStream()); // create streams
 			ois = new ObjectInputStream(socket.getInputStream());
 			ss = new SynchedStreams(oos); // synchronize on the outputstream
+			
+			oos.writeInt(limit);
 		}catch (Exception e){e.printStackTrace();}
 		
 		try{		

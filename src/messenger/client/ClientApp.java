@@ -13,6 +13,15 @@ public class ClientApp extends JApplet{
 	private int xspacing = 20;
 	private int txtheight = 25;
 	private int btnheight = 35;
+	private String chatRoom = "Default";
+	
+	private JLabel chatLabel;
+	private JButton exit;
+	private JScrollPane userScroll;
+	private JScrollPane historyScroll;
+	private JTextArea chatHistory;
+	private JTextArea chatBox;
+	private JButton send;
 	
 	private ArrayList<Component> components;
 	
@@ -74,66 +83,102 @@ public class ClientApp extends JApplet{
 		components.clear();
 	}
 	
-	// Create the main window
-	private void mainWindow() {
+	// Create the window for choosing the chat room
+	private void chatRoomWindow() {
 		
 		ydim = ydim/2;
 		width = 500;
 		height = 700;
-		
-		Dimension dim = new Dimension(500, 700);
+		int[] rowHeights = {50, 550, 100};
+		int[] columnWidths = {125, 125, 125, 125};
 		
 		frame.setBounds(xdim, ydim/2, width, height);
 		getContentPane().setBackground(Color.lightGray);
 		
-		JPanel mainScreen = new JPanel();
-		mainScreen.setBounds(0, 0, width, height/2);
-		mainScreen.setLayout(new GridLayout(2, 2));
+		GridBagConstraints gbc = new GridBagConstraints();
+		GridBagLayout gbl = new GridBagLayout();
 		
-		JPanel userList = new JPanel();
-		JPanel roomList = new JPanel();
-		userList.setBounds(xspacing, xspacing, width/2 - 40, height - xspacing - 150);
-		roomList.setBounds(xspacing + width/2, xspacing, width/2 - 40, height - xspacing - 150);
-		userList.setBackground(Color.blue);
-		roomList.setBackground(Color.green);
+		gbl.rowHeights = rowHeights;
+		gbc.weightx = 0.0;
+		gbl.columnWidths = columnWidths;
+		frame.setLayout(gbl);
+
+		chatLabel = new JLabel();
+		chatLabel.setText("Current Room: " + chatRoom);
+		
+		exit = new JButton();
+		exit.setText("Leave Room");
+		exit.addActionListener(new ExitListener());
 		
 		String[] list = { "black", "blue", "green", "yellow", "white" };
-		String[] otherlist = { "blue", "blue", "blue", "yellow", "white" };
 		
-		JScrollPane userScroll = new JScrollPane(new JList(list));
-		JScrollPane roomScroll = new JScrollPane(new JList(list));
-		userScroll.setBounds(xspacing, xspacing, width/2 - 40, height - xspacing - 150);
-		userScroll.setMinimumSize(dim);
-		roomScroll.setBounds(xspacing + width/2, xspacing, width/2 - 40, height - xspacing - 150);
+		userScroll = new JScrollPane(new JList(list));
+		userScroll.setMinimumSize(new Dimension(250,100));
+		userScroll.setMaximumSize(new Dimension(250,1000));
 		
-		JTextArea chatBox = new JTextArea();
+		chatHistory = new JTextArea();
+		chatHistory.setMinimumSize(new Dimension(250,100));
+		chatHistory.setMaximumSize(new Dimension(250,550));
+		chatHistory.setEditable(false);
+		chatHistory.setLineWrap(true);
 		
-		JButton send = new JButton();
+		historyScroll = new JScrollPane(chatHistory);
+		historyScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		
+		chatBox = new JTextArea();
+		chatBox.setMinimumSize(new Dimension(375, 100));
+		
+		send = new JButton();
 		send.setText("Send");
 		send.addActionListener(new SendListener());
 		
-		userList.add(userScroll);
-		roomList.add(roomScroll);
+		gbc.fill = GridBagConstraints.BOTH;
+		gbc.gridx = 0; gbc.gridy = 0;
+		gbc.gridwidth = 3;
+		gbl.setConstraints(chatLabel, gbc);
+		components.add(chatLabel);
 		
-		components.add(userList);
-		components.add(roomList);
+		gbc.gridx = 3; gbc.gridy = 0;
+		gbc.gridwidth = 1;
+		gbl.setConstraints(exit, gbc);
+		components.add(exit);
+		
+		gbc.gridx = 0; gbc.gridy = 1;
+		gbc.gridwidth = 2;
+		gbl.setConstraints(userScroll, gbc);
+		components.add(userScroll);
+		
+		gbc.gridx = 2; gbc.gridy = 1;
+		gbc.gridwidth = 2;
+		gbl.setConstraints(historyScroll, gbc);
+		components.add(historyScroll);
+		
+		gbc.gridx = 0; gbc.gridy = 2;
+		gbc.gridwidth = 3;
+		gbl.setConstraints(chatBox, gbc);
 		components.add(chatBox);
+		
+		gbc.gridx = 3; gbc.gridy = 2;
+		gbc.gridwidth = 1;
+		gbl.setConstraints(send, gbc);
 		components.add(send);
 		
 		for (int i = 0; i < components.size(); i++) {
-			mainScreen.add(components.get(i));
+			frame.add(components.get(i));
 		}
-		getContentPane().add(mainScreen);
+		//getContentPane().add(frame);
 	}
 	
 	// Handles the sending of the message
 	class SendListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
+			
+			chatHistory.setText(chatHistory.getText() + "\n" + "UserName: " + chatBox.getText());
+			chatBox.setText("");
 			//TODO: Determine whether post to chat room or whisper.
 			//TODO: Send the message
 		}
 	}
-	
 	
 	
 	// Handles the Login button click event
@@ -144,7 +189,7 @@ public class ClientApp extends JApplet{
 			
 			clearComponents();
 			
-			mainWindow();
+			chatRoomWindow();
 			
 			Graphics g = frame.getGraphics();
 			//g.drawRect(0, 0, width, height);
@@ -154,6 +199,13 @@ public class ClientApp extends JApplet{
 	
 	// Handles the New User button click event
 	class NewUserListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			// TODO: Clear the components currently in the frame
+		}
+	}
+	
+	// Handles the Leave Room button click event
+	class ExitListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			// TODO: Clear the components currently in the frame
 		}

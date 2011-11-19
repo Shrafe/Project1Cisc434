@@ -1,9 +1,11 @@
 package client;
 
 import java.util.*;
+import java.util.List;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.event.*;
 
 public class ClientApp extends JApplet{
 
@@ -14,10 +16,16 @@ public class ClientApp extends JApplet{
 	private int txtheight = 25;
 	private int btnheight = 35;
 	private String chatRoom = "Default";
+	private String user;
+	private DefaultListModel<String> list;
+	
+	private JTextField username;
+	private JPasswordField password;
 	
 	private JLabel chatLabel;
 	private JButton exit;
 	private JScrollPane userScroll;
+	private JList<String> userList;
 	private JScrollPane historyScroll;
 	private JTextArea chatHistory;
 	private JTextArea chatBox;
@@ -37,10 +45,10 @@ public class ClientApp extends JApplet{
 		frame.setResizable(false);
 		getContentPane().setBackground(Color.lightGray);
 		
-		JTextField username = new JTextField();
+		username = new JTextField();
 		username.setBounds(xspacing, height/4 , width-8*xspacing, txtheight);
 		
-		JPasswordField password = new JPasswordField();
+		password = new JPasswordField();
 		password.setBounds(xspacing, height/2, width-8*xspacing, txtheight);
 		
 		JLabel userLabel = new JLabel();
@@ -74,15 +82,6 @@ public class ClientApp extends JApplet{
 		}
 	}
 	
-	// Clear every component from the current frame
-	private void clearComponents() {
-		for (int i = 0; i < components.size(); i++) {
-			frame.remove(components.get(i));
-		}
-		
-		components.clear();
-	}
-	
 	// Create the window for choosing the chat room
 	private void chatRoomWindow() {
 		
@@ -110,9 +109,21 @@ public class ClientApp extends JApplet{
 		exit.setText("Leave Room");
 		exit.addActionListener(new ExitListener());
 		
-		String[] list = { "black", "blue", "green", "yellow", "white" };
+		////////////////////////////////////////////////////////////
+		// list will eventually accept data that was returned by the server
+		list = new DefaultListModel<String>();
+		list.addElement("All");
+		list.addElement("User1");
+		list.addElement("User2");
+		list.addElement("User3");
+		list.addElement("User4");
+		////////////////////////////////////////////////////////////
 		
-		userScroll = new JScrollPane(new JList(list));
+		userList = new JList<String>(list);
+		userList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		userList.addListSelectionListener(new UserSelectionListener());
+		
+		userScroll = new JScrollPane(userList);
 		userScroll.setMinimumSize(new Dimension(250,100));
 		userScroll.setMaximumSize(new Dimension(250,1000));
 		
@@ -168,32 +179,78 @@ public class ClientApp extends JApplet{
 		}
 		//getContentPane().add(frame);
 	}
+
+	private void chatSelectionWindow() {
+		
+	}
 	
-	// Handles the sending of the message
+	// Clear every component from the current frame
+	private void clearComponents() {
+		for (int i = 0; i < components.size(); i++) {
+			frame.remove(components.get(i));
+		}
+		
+		components.clear();
+	}
+	
+	/**
+	 * Listener class for sending messages to the server. Creates a thread to handle
+	 * the actual sending
+	 */
 	class SendListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			
-			chatHistory.setText(chatHistory.getText() + "\n" + "UserName: " + chatBox.getText());
+			int size = userList.getSelectedIndices().length;
+			ClientMsgThread thread;
+			
+			// One whisper or "All" users selected
+			if(size == 1) {
+				
+				if (userList.getSelectedIndex() != 0) {
+					// Whisper the target
+					thread = new ClientMsgThread(
+							user + ": " + chatBox.getText(),
+							userList.getSelectedValue()
+							);
+				}
+				else {
+					// Post to the room
+					thread = new ClientMsgThread(user + ": " + chatBox.getText());
+				}
+			}
+			else {
+				// Whisper multiple targets
+				List<String> users = userList.getSelectedValuesList();
+				thread = new ClientMsgThread(
+						user + ": " + chatBox.getText(),
+						users);
+			}
+			
+			// Send the message
+			thread.run();
+			
+			/////////////////////////////////////////////
+			// Testing that the message shows up in the box
+			chatHistory.setText(chatHistory.getText() + "\n" + user + ": " + chatBox.getText());
+			/////////////////////////////////////////////
+			
 			chatBox.setText("");
-			//TODO: Determine whether post to chat room or whisper.
-			//TODO: Send the message
 		}
 	}
-	
 	
 	// Handles the Login button click event
 	class LoginListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			// TODO: Send the textfield data to the server then wait for a reply.
-			// TODO: Clear the components currently in the frame and resize it
 			
-			clearComponents();
-			
-			chatRoomWindow();
-			
-			Graphics g = frame.getGraphics();
-			//g.drawRect(0, 0, width, height);
-			//frame.paint(g);
+			if (!username.getText().equals("")) {
+				
+				// TODO: Send the textfield data to the server then wait for a reply.
+				user = username.getText();
+				
+				clearComponents();
+				
+				chatRoomWindow();
+			}
 		}
 	}
 	
@@ -208,6 +265,25 @@ public class ClientApp extends JApplet{
 	class ExitListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			// TODO: Clear the components currently in the frame
+		}
+	}
+	
+	/**
+	 * Listener class for when the user clicks on a any user in the
+	 * list of users. Includes shift and ctrl selection, but does not
+	 * simply add or remove selections by left clicking without modifiers.
+	 */
+	class UserSelectionListener implements ListSelectionListener {
+		public void valueChanged(ListSelectionEvent e) {
+		    if (e.getValueIsAdjusting() == false) {
+		    	
+		    	int size = userList.getSelectedIndices().length;
+		    	
+		    	// I swear I can do something here...
+		        if (userList.getSelectedIndex() == 0 && size != 1) {
+		        	//userList.clearSelection();
+		        }
+		    }
 		}
 	}
 }
